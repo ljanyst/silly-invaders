@@ -7,5 +7,8 @@ include(Firmware)
 
 project(silly-invaders)
 
+include_directories(${CMAKE_SOURCE_DIR})
+
 add_subdirectory(tm4c)
+add_subdirectory(io)
 add_subdirectory(tests)
