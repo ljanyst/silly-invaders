@@ -36,6 +36,7 @@ struct IO_output {
 typedef struct IO_output IO_output;
 
 int32_t IO_write(IO_output *out, const void *data, uint32_t length);
+int32_t IO_print(IO_output *out, const char *format, ...);
 
 //------------------------------------------------------------------------------
 // IO Input
