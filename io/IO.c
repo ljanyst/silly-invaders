@@ -28,3 +28,33 @@ int32_t __IO_init()
 {
   return -IO_ENOSYS;
 }
+
+WEAK_ALIAS(__IO_init, IO_init);
+
+//------------------------------------------------------------------------------
+// Write data to an output device
+//------------------------------------------------------------------------------
+int32_t IO_write(IO_output *out, const void *data, uint32_t length)
+{
+  int32_t i = 0;
+  const uint8_t *b_data = data;
+  for(i = 0; i < length; ++i) {
+    int ret = (*out->put_byte)(out, b_data[i]);
+    if(ret) return ret;
+  }
+  return i;
+}
+
+//------------------------------------------------------------------------------
+// Read data from an input device
+//------------------------------------------------------------------------------
+int32_t IO_read(IO_input *in, void *data, uint32_t length)
+{
+  int32_t i = 0;
+  uint8_t *b_data = data;
+  for(i = 0; i < length; ++i) {
+    int ret = (*in->get_byte)(in, &b_data[i]);
+    if(ret) return ret;
+  }
+  return i;
+}

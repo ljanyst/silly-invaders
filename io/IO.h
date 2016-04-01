@@ -25,3 +25,25 @@
 // Initialize the IO modules
 //------------------------------------------------------------------------------
 int32_t IO_init();
+
+//------------------------------------------------------------------------------
+// IO Output
+//------------------------------------------------------------------------------
+struct IO_output {
+  int32_t (*put_byte)(struct IO_output *out, uint8_t byte);
+  void *data;
+};
+typedef struct IO_output IO_output;
+
+int32_t IO_write(IO_output *out, const void *data, uint32_t length);
+
+//------------------------------------------------------------------------------
+// IO Input
+//------------------------------------------------------------------------------
+struct IO_input {
+  int32_t (*get_byte)(struct IO_input *in, uint8_t *byte);
+  void *data;
+};
+typedef struct IO_input IO_input;
+
+int32_t IO_read(IO_input *in, void *data, uint32_t length);
