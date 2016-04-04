@@ -276,3 +276,290 @@ int32_t IO_read(IO_input *in, void *data, uint32_t length)
   }
   return i;
 }
+
+//------------------------------------------------------------------------------
+// Check if the character is a whitespace
+//------------------------------------------------------------------------------
+static int is_whitespace(uint8_t chr)
+{
+  if(chr >= 9 && chr <= 13)
+    return 1;
+  if(chr == 32)
+    return 1;
+  return 0;
+}
+
+//------------------------------------------------------------------------------
+// Scan a string
+//------------------------------------------------------------------------------
+static int32_t scan_string(IO_input *in, char *data, uint32_t length)
+{
+  if(length < 2)
+    return -IO_EINVAL;
+
+  //----------------------------------------------------------------------------
+  // Skip the initial whitespaces
+  //----------------------------------------------------------------------------
+  uint8_t chr;
+  while(1) {
+    int32_t ret = IO_read(in, &chr, 1);
+    if(ret <= 0) return ret;
+    if(!is_whitespace(chr))
+      break;
+  }
+
+  //----------------------------------------------------------------------------
+  // Read the data
+  //----------------------------------------------------------------------------
+  data[0] = chr;
+  uint32_t i;
+  for(i = 1; i < length-1; ++i) {
+    int32_t ret = IO_read(in, &data[i], 1);
+    if(ret <= 0) return ret;
+    if(is_whitespace(data[i])) {
+      data[i] = 0;
+      return i;
+    }
+  }
+  data[i] = 0;
+  return length;
+}
+
+//------------------------------------------------------------------------------
+// Is digit
+//------------------------------------------------------------------------------
+static int is_digit(char chr, uint8_t base)
+{
+  if(base <= 10) {
+    if(chr >= '0' && chr < ('0'+base))
+      return 1;
+  }
+  else {
+    if(chr >= '0' && chr <= '9')
+      return 1;
+    if(chr >= 'a' && chr < ('a'+base-10))
+      return 1;
+  }
+  return 0;
+}
+
+//------------------------------------------------------------------------------
+// Check if the scanned characters are correct
+//------------------------------------------------------------------------------
+int check_chars(const char *data, uint8_t type, uint8_t base)
+{
+  if(base == 0)
+    base = 10;
+
+  int minuses = 0;
+  int es = 0;
+  int dots = 0;
+
+  for(const char *cursor = data; *cursor; ++cursor) {
+
+    //--------------------------------------------------------------------------
+    // Minus
+    //--------------------------------------------------------------------------
+    if(*cursor == '-') {
+      ++minuses;
+
+      if(type == IO_INT32 && minuses == 1 && cursor == data &&
+         is_digit(*(cursor+1), base))
+        continue;
+
+      if(type == IO_DOUBLE && minuses <= 2) {
+        if(cursor == data && is_digit(*(cursor+1), base))
+          continue;
+        if(*(cursor-1) == 'e' && is_digit(*(cursor+1), base))
+          continue;
+      }
+    }
+
+    //--------------------------------------------------------------------------
+    // e
+    //--------------------------------------------------------------------------
+    else if(*cursor == 'e') {
+      ++es;
+      if(type == IO_DOUBLE && cursor != data && es == 1)
+        continue;
+    }
+
+    //--------------------------------------------------------------------------
+    // .
+    //--------------------------------------------------------------------------
+    else if(*cursor == '.') {
+      ++dots;
+      if(type == IO_DOUBLE && cursor != data && dots == 1 &&
+         is_digit(*(cursor-1), base) && is_digit(*(cursor+1), base))
+        continue;
+    }
+
+    //--------------------------------------------------------------------------
+    // Something else
+    //--------------------------------------------------------------------------
+    else if(is_digit(*cursor, base))
+      continue;
+
+    //--------------------------------------------------------------------------
+    // Unacceptable character
+    //--------------------------------------------------------------------------
+    return 0;
+  }
+  return 1;
+}
+
+//------------------------------------------------------------------------------
+// Parse uint64
+//------------------------------------------------------------------------------
+void parse_uint64(uint64_t *result, char *buffer, uint8_t base)
+{
+  if(base == 0) base = 10;
+  uint64_t n = 0;
+  uint64_t mul = 1;
+  uint8_t  tmp = 0;
+  uint32_t len = strlen(buffer);
+  for(int i = len-1; i >= 0; --i) {
+    if(buffer[i] <= '9')
+      tmp = buffer[i] - '0';
+    else
+      tmp = 10 + buffer[i] - 'a';
+    n += tmp*mul;
+    mul *= base;
+  }
+  *result = n;
+}
+
+//------------------------------------------------------------------------------
+// Parse uint32
+//------------------------------------------------------------------------------
+void parse_uint32(uint32_t *result, char *buffer, uint8_t base)
+{
+  uint64_t r;
+  parse_uint64(&r, buffer, base);
+  *result = (uint32_t)r;
+}
+
+//------------------------------------------------------------------------------
+// Parse int64
+//------------------------------------------------------------------------------
+void parse_int64(int64_t *result, char *buffer)
+{
+  uint64_t r;
+  if(buffer[0] == '-') {
+    parse_uint64(&r, buffer+1, 10);
+    *result = -r;
+  }
+  else {
+    parse_uint64(&r, buffer, 10);
+    *result = r;
+  }
+}
+
+//------------------------------------------------------------------------------
+// Parse int32
+//------------------------------------------------------------------------------
+void parse_int32(int32_t *result, char *buffer)
+{
+  int64_t r;
+  parse_int64(&r, buffer);
+  *result = r;
+}
+
+//------------------------------------------------------------------------------
+// Parse double
+//------------------------------------------------------------------------------
+void parse_double(double *result, char *buffer)
+{
+  *result = 0;
+  //----------------------------------------------------------------------------
+  // Find the parts
+  //----------------------------------------------------------------------------
+  char *integer = buffer;
+  char *fraction = 0;
+  char *exponent = 0;
+  int32_t len = strlen(buffer);
+  for(int i = 0; i < len; ++i) {
+    if(buffer[i] == '.') {
+      buffer[i] = 0;
+      fraction = buffer+i+1;
+    }
+    else if(buffer[i] == 'e') {
+      buffer[i] = 0;
+      exponent = buffer+i+1;
+    }
+  }
+
+  //----------------------------------------------------------------------------
+  // Convert the parts
+  //----------------------------------------------------------------------------
+  int64_t  i_integer;
+  uint64_t i_fraction = 0;
+  uint32_t l_fraction = strlen(fraction);
+  int64_t  i_exponent = 0;
+
+  parse_int64(&i_integer, integer);
+  if(fraction)
+    parse_uint64(&i_fraction, fraction, 10);
+  if(exponent)
+    parse_int64(&i_exponent, exponent);
+
+  //----------------------------------------------------------------------------
+  // Put everything together
+  //----------------------------------------------------------------------------
+  double d = i_integer;
+  double df = i_fraction;
+  for(int i = 0; i < l_fraction; ++i)
+    df /= 10.0;
+  d += df;
+  if(i_exponent > 0)
+    for(int i = 0; i < i_exponent; ++i)
+      d *= 10.0;
+  else
+    for(int i = 0; i > i_exponent; --i)
+      d /= 10.0;
+  *result = d;
+}
+
+//------------------------------------------------------------------------------
+// Read and parse data from the input
+//------------------------------------------------------------------------------
+int32_t IO_scan(IO_input *in, uint8_t type, void *data, uint32_t param)
+{
+  if(type > IO_DOUBLE)
+    return -IO_EINVAL;
+
+  if(type == IO_STRING)
+    return scan_string(in, data, param);
+
+  char buffer[32];
+  int32_t ret = scan_string(in, buffer, 32);
+  if(ret < 0) return ret;
+  switch(type) {
+    case IO_INT32:
+      if(!check_chars(buffer, IO_INT32, 10))
+        return -IO_EINVAL;
+      parse_int32(data, buffer);
+      break;
+    case IO_INT64:
+      if(!check_chars(buffer, IO_INT32, 10))
+        return -IO_EINVAL;
+      parse_int64(data, buffer);
+      break;
+    case IO_UINT32:
+      if(!check_chars(buffer, IO_UINT32, param))
+        return -IO_EINVAL;
+      parse_uint32(data, buffer, param);
+      break;
+    case IO_UINT64:
+      if(!check_chars(buffer, IO_UINT32, param))
+        return -IO_EINVAL;
+      parse_uint64(data, buffer, param);
+      break;
+    case IO_DOUBLE:
+      if(!check_chars(buffer, IO_DOUBLE, 10))
+        return -IO_EINVAL;
+      parse_double(data, buffer);
+      break;
+  }
+  return ret;
+}

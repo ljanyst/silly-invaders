@@ -48,3 +48,22 @@ struct IO_input {
 typedef struct IO_input IO_input;
 
 int32_t IO_read(IO_input *in, void *data, uint32_t length);
+
+#define IO_STRING 0
+#define IO_INT32  1
+#define IO_INT64  2
+#define IO_UINT32 3
+#define IO_UINT64 4
+#define IO_DOUBLE 5
+
+//------------------------------------------------------------------------------
+// Read and parse data from the input
+//
+// @param in    the input device
+// @param type  type of data to by read
+// @param data  buffer for the data
+// @param param length of the buffer when IO_STRING is requested or base
+//              of the integer when an IO_UINT type is requested
+// @return      number of bytes read from the device or an error
+//------------------------------------------------------------------------------
+int32_t IO_scan(IO_input *in, uint8_t type, void *data, uint32_t param);
