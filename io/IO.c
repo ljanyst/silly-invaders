@@ -126,13 +126,15 @@ static uint32_t printFloat(IO_output *out, double num)
   //----------------------------------------------------------------------------
   int32_t exponent = 0;
   double numAbs = fabs(num);
-  while(numAbs > 999999999.0) {
-    ++exponent;
-    numAbs /= 10.0;
-  }
-  while(numAbs < 0.000000001) {
-    --exponent;
-    numAbs *= 10;
+  if(numAbs) {
+    while(numAbs > 999999999.0) {
+      ++exponent;
+      numAbs /= 10.0;
+    }
+    while(numAbs < 0.000000001) {
+      --exponent;
+      numAbs *= 10;
+    }
   }
 
   //----------------------------------------------------------------------------
