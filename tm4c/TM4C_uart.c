@@ -44,25 +44,31 @@ static const struct uart_gpio_data uart_gpio[] = {
 //------------------------------------------------------------------------------
 // Write a byte to given UART
 //------------------------------------------------------------------------------
-int32_t uart_put_byte_blocking(IO_output *out, uint8_t byte)
+int32_t uart_write_blocking(IO_output *out, void *data, uint32_t length)
 {
   uint32_t uart_offset = (uint32_t)out->data;
-  // wait until TXFF is 0
-  while((UART_REG(uart_offset, UART_FR) & 0x20) != 0);
-  UART_REG(uart_offset, UART_DR) = byte;
-  return 0;
+  const uint8_t *b_data = data;
+  for(uint32_t i = 0; i < length; ++i) {
+    // wait until TXFF is 0
+    while((UART_REG(uart_offset, UART_FR) & 0x20) != 0);
+    UART_REG(uart_offset, UART_DR) = b_data[i];
+  }
+  return length;
 }
 
 //------------------------------------------------------------------------------
 // Read a byte from given UART
 //------------------------------------------------------------------------------
-int32_t uart_get_byte_blocking(IO_input *in, uint8_t *byte)
+int32_t uart_read_blocking(IO_input *in, void *data, uint32_t length)
 {
   uint32_t uart_offset = (uint32_t)in->data;
-  // wait until RXFE is 0
-  while((UART_REG(uart_offset, UART_FR) & 0x10) != 0);
-  *byte = UART_REG(uart_offset, UART_DR) & 0xff;
-  return 0;
+  uint8_t *b_data = data;
+  for(uint32_t i = 0; i < length; ++i) {
+    // wait until RXFE is 0
+    while((UART_REG(uart_offset, UART_FR) & 0x10) != 0);
+    b_data[i] = UART_REG(uart_offset, UART_DR) & 0xff;
+  }
+  return length;
 }
 
 //------------------------------------------------------------------------------
@@ -140,12 +146,12 @@ int32_t IO_uart_init(uint8_t module, uint16_t flags, uint32_t baud,
   //----------------------------------------------------------------------------
   if(output) {
     output->data = (void *)(uint32_t)uart_offset;
-    output->put_byte = uart_put_byte_blocking;
+    output->write = uart_write_blocking;
   }
 
   if(input) {
     input->data = (void *)(uint32_t)uart_offset;
-    input->get_byte = uart_get_byte_blocking;
+    input->read = uart_read_blocking;
   }
 
   return 0;
