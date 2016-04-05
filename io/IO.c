@@ -40,13 +40,7 @@ WEAK_ALIAS(__IO_init, IO_init);
 //------------------------------------------------------------------------------
 int32_t IO_write(IO_output *out, const void *data, uint32_t length)
 {
-  int32_t i = 0;
-  const uint8_t *b_data = data;
-  for(i = 0; i < length; ++i) {
-    int ret = (*out->put_byte)(out, b_data[i]);
-    if(ret) return ret;
-  }
-  return i;
+  return (*out->write)(out, data, length);
 }
 
 //------------------------------------------------------------------------------
@@ -270,13 +264,7 @@ int32_t IO_print(IO_output *out, const char *format, ...)
 //------------------------------------------------------------------------------
 int32_t IO_read(IO_input *in, void *data, uint32_t length)
 {
-  int32_t i = 0;
-  uint8_t *b_data = data;
-  for(i = 0; i < length; ++i) {
-    int ret = (*in->get_byte)(in, &b_data[i]);
-    if(ret) return ret;
-  }
-  return i;
+  return (*in->read)(in, data, length);
 }
 
 //------------------------------------------------------------------------------

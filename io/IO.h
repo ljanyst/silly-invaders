@@ -30,7 +30,7 @@ int32_t IO_init();
 // IO Output
 //------------------------------------------------------------------------------
 struct IO_output {
-  int32_t (*put_byte)(struct IO_output *out, uint8_t byte);
+  int32_t (*write)(struct IO_output *out, void *data, uint32_t length);
   void *data;
 };
 typedef struct IO_output IO_output;
@@ -42,7 +42,7 @@ int32_t IO_print(IO_output *out, const char *format, ...);
 // IO Input
 //------------------------------------------------------------------------------
 struct IO_input {
-  int32_t (*get_byte)(struct IO_input *in, uint8_t *byte);
+  int32_t (*read)(struct IO_input *in, void *data, uint32_t length);
   void *data;
 };
 typedef struct IO_input IO_input;
