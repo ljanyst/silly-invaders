@@ -44,13 +44,13 @@ static const struct uart_gpio_data uart_gpio[] = {
 //------------------------------------------------------------------------------
 // Write a byte to given UART
 //------------------------------------------------------------------------------
-int32_t uart_write_normal(IO_output *out, void *data, uint32_t length)
+int32_t uart_write_normal(IO_io *io, const void *data, uint32_t length)
 {
-  uint32_t uart_offset = (uint32_t)out->data;
+  uint32_t uart_offset = (uint32_t)io->data;
   const uint8_t *b_data = data;
   for(uint32_t i = 0; i < length; ++i) {
     // we cannot write if TXFF is 1
-    if(out->flags & IO_NONBLOCKING) {
+    if(io->flags & IO_NONBLOCKING) {
       if((UART_REG(uart_offset, UART_FR) & 0x20) != 0) {
         if(i == 0) return -IO_EWOULDBLOCK;
         else return i;
@@ -66,13 +66,13 @@ int32_t uart_write_normal(IO_output *out, void *data, uint32_t length)
 //------------------------------------------------------------------------------
 // Read a byte from given UART
 //------------------------------------------------------------------------------
-int32_t uart_read_normal(IO_input *in, void *data, uint32_t length)
+int32_t uart_read_normal(IO_io *io, void *data, uint32_t length)
 {
-  uint32_t uart_offset = (uint32_t)in->data;
+  uint32_t uart_offset = (uint32_t)io->data;
   uint8_t *b_data = data;
   for(uint32_t i = 0; i < length; ++i) {
     // we cannot read if RXFE is 1
-    if(in->flags & IO_NONBLOCKING) {
+    if(io->flags & IO_NONBLOCKING) {
       if((UART_REG(uart_offset, UART_FR) & 0x10) != 0) {
         if(i == 0) return -IO_EWOULDBLOCK;
         else return i;
@@ -88,10 +88,12 @@ int32_t uart_read_normal(IO_input *in, void *data, uint32_t length)
 //------------------------------------------------------------------------------
 // Initialize given UART module
 //------------------------------------------------------------------------------
-int32_t IO_uart_init(uint8_t module, uint16_t flags, uint32_t baud,
-  IO_input *input, IO_output *output)
+int32_t IO_uart_init(IO_io *io, uint8_t module, uint16_t flags, uint32_t baud)
 {
   if(module > 7)
+    return -IO_EINVAL;
+
+  if(!io)
     return -IO_EINVAL;
 
   //----------------------------------------------------------------------------
@@ -158,17 +160,10 @@ int32_t IO_uart_init(uint8_t module, uint16_t flags, uint32_t baud,
   //----------------------------------------------------------------------------
   // Initialize the software
   //----------------------------------------------------------------------------
-  if(output) {
-    output->data = (void *)(uint32_t)uart_offset;
-    output->write = uart_write_normal;
-    output->flags = flags;
-  }
-
-  if(input) {
-    input->data = (void *)(uint32_t)uart_offset;
-    input->read = uart_read_normal;
-    input->flags = flags;
-  }
+  io->data = (void *)(uint32_t)uart_offset;
+  io->flags = flags;
+  io->write = uart_write_normal;
+  io->read = uart_read_normal;
 
   return 0;
 }
