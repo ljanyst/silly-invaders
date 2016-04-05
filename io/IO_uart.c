@@ -24,8 +24,7 @@
 //------------------------------------------------------------------------------
 // Dummy UART initializer
 //------------------------------------------------------------------------------
-int32_t __IO_uart_init(uint8_t module, uint16_t flags, uint32_t baud,
-  IO_input *input, IO_output *output)
+int32_t __IO_uart_init(IO_io *io, uint8_t module, uint16_t flags, uint32_t baud)
 {
   return -IO_ENOSYS;
 }

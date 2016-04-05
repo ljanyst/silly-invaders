@@ -24,11 +24,9 @@
 //------------------------------------------------------------------------------
 // Open UART device and create the associated input and output structures
 //
+// @param io     the io structure to be initialized
 // @param module UART module number to be configured
 // @param flags  flags
 // @param baud   baud rate of the device
-// @param input  input structure to be filled
-// @param output output structure to be filled
 //------------------------------------------------------------------------------
-int32_t IO_uart_init(uint8_t module, uint16_t flags, uint32_t baud,
-  IO_input *input, IO_output *output);
+int32_t IO_uart_init(IO_io *io, uint8_t module, uint16_t flags, uint32_t baud);

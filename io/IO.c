@@ -38,9 +38,9 @@ WEAK_ALIAS(__IO_init, IO_init);
 //------------------------------------------------------------------------------
 // Write data to an output device
 //------------------------------------------------------------------------------
-int32_t IO_write(IO_output *out, const void *data, uint32_t length)
+int32_t IO_write(IO_io *io, const void *data, uint32_t length)
 {
-  return (*out->write)(out, data, length);
+  return (*io->write)(io, data, length);
 }
 
 //------------------------------------------------------------------------------
@@ -82,19 +82,19 @@ static uint32_t printNumStr(char *str, uint64_t num, int base)
 }
 
 //------------------------------------------------------------------------------
-// Print unsigned int to output
+// Print unsigned int to an IO device
 //------------------------------------------------------------------------------
-static int32_t printNum(IO_output *out, uint64_t num, int base)
+static int32_t printNum(IO_io *io, uint64_t num, int base)
 {
   char buffer[32];
   uint32_t len = printNumStr(buffer, num, base);
-  return IO_write(out, buffer, len);
+  return IO_write(io, buffer, len);
 }
 
 //------------------------------------------------------------------------------
-// Print signed int to output
+// Print signed int to an IO device
 //------------------------------------------------------------------------------
-static int32_t printNumS(IO_output *out, int64_t num)
+static int32_t printNumS(IO_io *io, int64_t num)
 {
   char buffer[33];
   char *ptr = buffer;
@@ -107,13 +107,13 @@ static int32_t printNumS(IO_output *out, int64_t num)
     ++len;
   }
   len += printNumStr(ptr, num, 10);
-  return IO_write(out, buffer, len);
+  return IO_write(io, buffer, len);
 }
 
 //------------------------------------------------------------------------------
-// Print a floating point to output
+// Print a floating point to an IO device
 //------------------------------------------------------------------------------
-static uint32_t printFloat(IO_output *out, double num)
+static uint32_t printFloat(IO_io *io, double num)
 {
   //----------------------------------------------------------------------------
   // Normalize the number
@@ -136,8 +136,8 @@ static uint32_t printFloat(IO_output *out, double num)
   //----------------------------------------------------------------------------
   int32_t integer = (int32_t)numAbs;
   int32_t len = 0;
-  if(num < 0) len = printNumS(out, -integer);
-  else len = printNumS(out, integer);
+  if(num < 0) len = printNumS(io, -integer);
+  else len = printNumS(io, integer);
 
   int32_t fraction = (int32_t)((numAbs-integer) * 1000000000.0);
   if(fraction && 12-len > 1) {
@@ -153,20 +153,20 @@ static uint32_t printFloat(IO_output *out, double num)
     for(; buffer[i] == '0'; --i) buffer[i] = 0;
     ++i;
     if(12-len < i) i = 12-len;
-    len += IO_write(out, buffer, i);
+    len += IO_write(io, buffer, i);
   }
 
   if(exponent) {
-    IO_write(out, "e", 1);
-    len += printNumS(out, exponent);
+    IO_write(io, "e", 1);
+    len += printNumS(io, exponent);
   }
   return len;
 }
 
 //------------------------------------------------------------------------------
-// Print formated string to output
+// Print formated string to an IO device
 //------------------------------------------------------------------------------
-int32_t IO_print(IO_output *out, const char *format, ...)
+int32_t IO_print(IO_io *io, const char *format, ...)
 {
   va_list ap;
   int length  = 0;
@@ -182,7 +182,7 @@ int32_t IO_print(IO_output *out, const char *format, ...)
   va_start(ap, format);
   while(*cursor) {
     if(*cursor == '%') {
-      ret = IO_write(out, start, length);
+      ret = IO_write(io, start, length);
       if(ret < 0) return ret;
       written += ret;
       ++cursor;
@@ -191,7 +191,7 @@ int32_t IO_print(IO_output *out, const char *format, ...)
 
       if(*cursor == 's') {
         const char *str = va_arg(ap, const char*);
-        ret = IO_write(out, str, strlen(str));
+        ret = IO_write(io, str, strlen(str));
         if(ret < 0) return ret;
         written += ret;
       }
@@ -218,7 +218,7 @@ int32_t IO_print(IO_output *out, const char *format, ...)
           double num;
           if(sz <= 1) num = va_arg(ap, double);
           else num = va_arg(ap, long double);
-          ret = printFloat(out, num);
+          ret = printFloat(io, num);
           if(ret < 0) return ret;
           written += ret;
         }
@@ -227,7 +227,7 @@ int32_t IO_print(IO_output *out, const char *format, ...)
           if(sz == 0) num = va_arg(ap, unsigned);
           else if(sz == 1) num = va_arg(ap, unsigned long);
           else num = va_arg(ap, unsigned long long);
-          ret = printNum(out, num, base);
+          ret = printNum(io, num, base);
           if(ret < 0) return ret;
           written += ret;
         }
@@ -236,7 +236,7 @@ int32_t IO_print(IO_output *out, const char *format, ...)
           if(sz == 0) num = va_arg(ap, int);
           else if(sz == 1) num = va_arg(ap, long);
           else num = va_arg(ap, long long);
-          ret = printNumS(out, num);
+          ret = printNumS(io, num);
           if(ret < 0) return ret;
           written += ret;
         }
@@ -251,7 +251,7 @@ int32_t IO_print(IO_output *out, const char *format, ...)
     ++cursor;
   }
   if(length) {
-    ret = IO_write(out, start, length);
+    ret = IO_write(io, start, length);
     if(ret < 0) return ret;
     written += ret;
   }
@@ -262,9 +262,9 @@ int32_t IO_print(IO_output *out, const char *format, ...)
 //------------------------------------------------------------------------------
 // Read data from an input device
 //------------------------------------------------------------------------------
-int32_t IO_read(IO_input *in, void *data, uint32_t length)
+int32_t IO_read(IO_io *io, void *data, uint32_t length)
 {
-  return (*in->read)(in, data, length);
+  return (*io->read)(io, data, length);
 }
 
 //------------------------------------------------------------------------------
@@ -282,7 +282,7 @@ static int is_whitespace(uint8_t chr)
 //------------------------------------------------------------------------------
 // Scan a string
 //------------------------------------------------------------------------------
-static int32_t scan_string(IO_input *in, char *data, uint32_t length)
+static int32_t scan_string(IO_io *io, char *data, uint32_t length)
 {
   if(length < 2)
     return -IO_EINVAL;
@@ -292,7 +292,7 @@ static int32_t scan_string(IO_input *in, char *data, uint32_t length)
   //----------------------------------------------------------------------------
   uint8_t chr;
   while(1) {
-    int32_t ret = IO_read(in, &chr, 1);
+    int32_t ret = IO_read(io, &chr, 1);
     if(ret <= 0) return ret;
     if(!is_whitespace(chr))
       break;
@@ -304,7 +304,7 @@ static int32_t scan_string(IO_input *in, char *data, uint32_t length)
   data[0] = chr;
   uint32_t i;
   for(i = 1; i < length-1; ++i) {
-    int32_t ret = IO_read(in, &data[i], 1);
+    int32_t ret = IO_read(io, &data[i], 1);
     if(ret <= 0) return ret;
     if(is_whitespace(data[i])) {
       data[i] = 0;
@@ -513,16 +513,16 @@ void parse_double(double *result, char *buffer)
 //------------------------------------------------------------------------------
 // Read and parse data from the input
 //------------------------------------------------------------------------------
-int32_t IO_scan(IO_input *in, uint8_t type, void *data, uint32_t param)
+int32_t IO_scan(IO_io *io, uint8_t type, void *data, uint32_t param)
 {
   if(type > IO_DOUBLE)
     return -IO_EINVAL;
 
   if(type == IO_STRING)
-    return scan_string(in, data, param);
+    return scan_string(io, data, param);
 
   char buffer[32];
-  int32_t ret = scan_string(in, buffer, 32);
+  int32_t ret = scan_string(io, buffer, 32);
   if(ret < 0) return ret;
   switch(type) {
     case IO_INT32:
