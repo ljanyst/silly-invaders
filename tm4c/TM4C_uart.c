@@ -44,13 +44,20 @@ static const struct uart_gpio_data uart_gpio[] = {
 //------------------------------------------------------------------------------
 // Write a byte to given UART
 //------------------------------------------------------------------------------
-int32_t uart_write_blocking(IO_output *out, void *data, uint32_t length)
+int32_t uart_write_normal(IO_output *out, void *data, uint32_t length)
 {
   uint32_t uart_offset = (uint32_t)out->data;
   const uint8_t *b_data = data;
   for(uint32_t i = 0; i < length; ++i) {
-    // wait until TXFF is 0
-    while((UART_REG(uart_offset, UART_FR) & 0x20) != 0);
+    // we cannot write if TXFF is 1
+    if(out->flags & IO_NONBLOCKING) {
+      if((UART_REG(uart_offset, UART_FR) & 0x20) != 0) {
+        if(i == 0) return -IO_EWOULDBLOCK;
+        else return i;
+      }
+    }
+    else
+      while((UART_REG(uart_offset, UART_FR) & 0x20) != 0);
     UART_REG(uart_offset, UART_DR) = b_data[i];
   }
   return length;
@@ -59,13 +66,20 @@ int32_t uart_write_blocking(IO_output *out, void *data, uint32_t length)
 //------------------------------------------------------------------------------
 // Read a byte from given UART
 //------------------------------------------------------------------------------
-int32_t uart_read_blocking(IO_input *in, void *data, uint32_t length)
+int32_t uart_read_normal(IO_input *in, void *data, uint32_t length)
 {
   uint32_t uart_offset = (uint32_t)in->data;
   uint8_t *b_data = data;
   for(uint32_t i = 0; i < length; ++i) {
-    // wait until RXFE is 0
-    while((UART_REG(uart_offset, UART_FR) & 0x10) != 0);
+    // we cannot read if RXFE is 1
+    if(in->flags & IO_NONBLOCKING) {
+      if((UART_REG(uart_offset, UART_FR) & 0x10) != 0) {
+        if(i == 0) return -IO_EWOULDBLOCK;
+        else return i;
+      }
+    }
+    else
+      while((UART_REG(uart_offset, UART_FR) & 0x10) != 0);
     b_data[i] = UART_REG(uart_offset, UART_DR) & 0xff;
   }
   return length;
@@ -146,12 +160,14 @@ int32_t IO_uart_init(uint8_t module, uint16_t flags, uint32_t baud,
   //----------------------------------------------------------------------------
   if(output) {
     output->data = (void *)(uint32_t)uart_offset;
-    output->write = uart_write_blocking;
+    output->write = uart_write_normal;
+    output->flags = flags;
   }
 
   if(input) {
     input->data = (void *)(uint32_t)uart_offset;
-    input->read = uart_read_blocking;
+    input->read = uart_read_normal;
+    input->flags = flags;
   }
 
   return 0;
