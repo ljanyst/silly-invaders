@@ -22,6 +22,11 @@
 #include <stdint.h>
 
 //------------------------------------------------------------------------------
+// IO flags
+//------------------------------------------------------------------------------
+#define IO_NONBLOCKING 0x0001
+
+//------------------------------------------------------------------------------
 // Initialize the IO modules
 //------------------------------------------------------------------------------
 int32_t IO_init();
@@ -32,6 +37,7 @@ int32_t IO_init();
 struct IO_output {
   int32_t (*write)(struct IO_output *out, void *data, uint32_t length);
   void *data;
+  uint16_t flags;
 };
 typedef struct IO_output IO_output;
 
@@ -44,6 +50,7 @@ int32_t IO_print(IO_output *out, const char *format, ...);
 struct IO_input {
   int32_t (*read)(struct IO_input *in, void *data, uint32_t length);
   void *data;
+  uint16_t flags;
 };
 typedef struct IO_input IO_input;
 
