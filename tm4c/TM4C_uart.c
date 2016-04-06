@@ -24,29 +24,63 @@
 //------------------------------------------------------------------------------
 // GPIO pins for UART
 //------------------------------------------------------------------------------
-struct uart_gpio_data {
-  uint8_t port;
-  uint8_t rx;
-  uint8_t tx;
+struct uart_data {
+  uint8_t gpio_port;
+  uint8_t gpio_pin_rx;
+  uint8_t gpio_pin_tx;
+  uint8_t interrupt_num;
 };
 
-static const struct uart_gpio_data uart_gpio[] = {
-  {GPIO_PORTA_NUM, GPIO_PIN0_NUM, GPIO_PIN1_NUM},
-  {GPIO_PORTB_NUM, GPIO_PIN0_NUM, GPIO_PIN1_NUM},
-  {GPIO_PORTD_NUM, GPIO_PIN6_NUM, GPIO_PIN7_NUM},
-  {GPIO_PORTC_NUM, GPIO_PIN6_NUM, GPIO_PIN7_NUM},
-  {GPIO_PORTC_NUM, GPIO_PIN4_NUM, GPIO_PIN5_NUM},
-  {GPIO_PORTE_NUM, GPIO_PIN4_NUM, GPIO_PIN5_NUM},
-  {GPIO_PORTD_NUM, GPIO_PIN4_NUM, GPIO_PIN5_NUM},
-  {GPIO_PORTE_NUM, GPIO_PIN0_NUM, GPIO_PIN1_NUM}
+static const struct uart_data uart_info[] = {
+  {GPIO_PORTA_NUM, GPIO_PIN0_NUM, GPIO_PIN1_NUM, 5},
+  {GPIO_PORTB_NUM, GPIO_PIN0_NUM, GPIO_PIN1_NUM, 6},
+  {GPIO_PORTD_NUM, GPIO_PIN6_NUM, GPIO_PIN7_NUM, 33},
+  {GPIO_PORTC_NUM, GPIO_PIN6_NUM, GPIO_PIN7_NUM, 59},
+  {GPIO_PORTC_NUM, GPIO_PIN4_NUM, GPIO_PIN5_NUM, 60},
+  {GPIO_PORTE_NUM, GPIO_PIN4_NUM, GPIO_PIN5_NUM, 61},
+  {GPIO_PORTD_NUM, GPIO_PIN4_NUM, GPIO_PIN5_NUM, 62},
+  {GPIO_PORTE_NUM, GPIO_PIN0_NUM, GPIO_PIN1_NUM, 63}
 };
+
+//------------------------------------------------------------------------------
+// IO devices
+//------------------------------------------------------------------------------
+static struct IO_io *uart_devices[8];
+
+//------------------------------------------------------------------------------
+// Handle uart interrupt
+//------------------------------------------------------------------------------
+static void uart_handler(uint8_t module)
+{
+  uint16_t events = 0;
+  uint32_t module_offset = module * UART_MODULE_OFFSET;
+
+  if(UART_REG(module_offset, UART_RIS) & 0x10) events |= IO_EVENT_READ;
+  if(UART_REG(module_offset, UART_RIS) & 0x20) events |= IO_EVENT_WRITE;
+
+  if(uart_devices[module] && uart_devices[module]->event)
+    uart_devices[module]->event(uart_devices[module], events);
+}
+
+//------------------------------------------------------------------------------
+// Interrupt handlers
+//------------------------------------------------------------------------------
+void uart0_handler() { uart_handler(0); }
+void uart1_handler() { uart_handler(1); }
+void uart2_handler() { uart_handler(2); }
+void uart3_handler() { uart_handler(3); }
+void uart4_handler() { uart_handler(4); }
+void uart5_handler() { uart_handler(5); }
+void uart6_handler() { uart_handler(6); }
+void uart7_handler() { uart_handler(7); }
 
 //------------------------------------------------------------------------------
 // Write a byte to given UART
 //------------------------------------------------------------------------------
-int32_t uart_write_normal(IO_io *io, const void *data, uint32_t length)
+static int32_t uart_write_normal(IO_io *io, const void *data, uint32_t length)
 {
   uint32_t uart_offset = (uint32_t)io->data;
+
   const uint8_t *b_data = data;
   for(uint32_t i = 0; i < length; ++i) {
     // we cannot write if TXFF is 1
@@ -66,7 +100,7 @@ int32_t uart_write_normal(IO_io *io, const void *data, uint32_t length)
 //------------------------------------------------------------------------------
 // Read a byte from given UART
 //------------------------------------------------------------------------------
-int32_t uart_read_normal(IO_io *io, void *data, uint32_t length)
+static int32_t uart_read_normal(IO_io *io, void *data, uint32_t length)
 {
   uint32_t uart_offset = (uint32_t)io->data;
   uint8_t *b_data = data;
@@ -99,9 +133,9 @@ int32_t IO_uart_init(IO_io *io, uint8_t module, uint16_t flags, uint32_t baud)
   //----------------------------------------------------------------------------
   // Initialize the hardware
   //----------------------------------------------------------------------------
-  uint8_t  port        = uart_gpio[module].port;
-  uint8_t  rx          = uart_gpio[module].rx;
-  uint8_t  tx          = uart_gpio[module].tx;
+  uint8_t  port        = uart_info[module].gpio_port;
+  uint8_t  rx          = uart_info[module].gpio_pin_rx;
+  uint8_t  tx          = uart_info[module].gpio_pin_tx;
   uint16_t port_offset = port * GPIO_PORT_OFFSET;
   uint16_t uart_offset = module * UART_MODULE_OFFSET;
 
@@ -164,6 +198,39 @@ int32_t IO_uart_init(IO_io *io, uint8_t module, uint16_t flags, uint32_t baud)
   io->flags = flags;
   io->write = uart_write_normal;
   io->read = uart_read_normal;
+  io->type = IO_UART;
+  uart_devices[module] = io;
 
+  //----------------------------------------------------------------------------
+  // Enable the interrupt if needed
+  //----------------------------------------------------------------------------
+  if(flags & IO_ASYNC) {
+    uint8_t nvic_bit = uart_info[module].interrupt_num % 32;
+    uint8_t nvic_reg = uart_info[module].interrupt_num / 32;
+    NVIC_EN_REG(nvic_reg) |= (1 << nvic_bit);
+  }
+
+  return 0;
+}
+
+//------------------------------------------------------------------------------
+// Enable events on UART device
+//------------------------------------------------------------------------------
+int32_t TM4C_event_enable_uart(IO_io *io, uint16_t events)
+{
+  uint32_t uart_offset = (uint32_t)io->data;
+  if(events & IO_EVENT_READ)  UART_REG(uart_offset, UART_IM) |= 0x10;
+  if(events & IO_EVENT_WRITE) UART_REG(uart_offset, UART_IM) |= 0x20;
+  return 0;
+}
+
+//------------------------------------------------------------------------------
+// Disable events on UART device
+//------------------------------------------------------------------------------
+int32_t TM4C_event_disable_uart(IO_io *io, uint16_t events)
+{
+  uint32_t uart_offset = (uint32_t)io->data;
+  if(events & IO_EVENT_READ)  UART_REG(uart_offset, UART_IM) &= ~0x10;
+  if(events & IO_EVENT_WRITE) UART_REG(uart_offset, UART_IM) &= ~0x20;
   return 0;
 }

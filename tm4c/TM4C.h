@@ -25,6 +25,12 @@
 #define STCTRL_REG           (*(volatile unsigned long *)0xe000e010)
 #define STRELOAD_REG         (*(volatile unsigned long *)0xe000e014)
 #define STCURRENT_REG        (*(volatile unsigned long *)0xe000e018)
+#define NVIC_EN0             (*(volatile unsigned long *)0xe000e100)
+#define NVIC_EN1             (*(volatile unsigned long *)0xe000e104)
+#define NVIC_EN2             (*(volatile unsigned long *)0xe000e108)
+#define NVIC_EN3             (*(volatile unsigned long *)0xe000e10c)
+#define NVIC_EN4             (*(volatile unsigned long *)0xe000e110)
+#define NVIC_EN_REG(NUM)     (*(volatile unsigned long *)(0xe000e100+4*NUM))
 #define SYSPRI3_REG          (*(volatile unsigned long *)0xe000ed20)
 #define CPAC_REG             (*(volatile unsigned long *)0xe000ed88)
 
@@ -96,7 +102,17 @@
 #define UART_FBRD          0x0028
 #define UART_LCRH          0x002c
 #define UART_CTL           0x0030
+#define UART_IFLS          0x0034
+#define UART_IM            0x0038
+#define UART_RIS           0x003c
+#define UART_ICR           0x0044
 
 #define UART_MODULE_OFFSET 0x1000
 
 #define UART_REG(MODULE, REG) (*(volatile unsigned long*)(UART_REG_BASE + MODULE + REG))
+
+//------------------------------------------------------------------------------
+// Enable/disable UART events
+//------------------------------------------------------------------------------
+int32_t TM4C_event_enable_uart(IO_io *io, uint16_t events);
+int32_t TM4C_event_disable_uart(IO_io *io, uint16_t events);

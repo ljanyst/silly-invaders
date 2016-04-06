@@ -18,6 +18,7 @@
 //------------------------------------------------------------------------------
 
 #include <io/IO.h>
+#include <io/IO_error.h>
 #include "TM4C.h"
 
 //------------------------------------------------------------------------------
@@ -71,6 +72,30 @@ int32_t IO_init()
     "dsb\r\n"        // force memory writed before continuing
     "isb\r\n" );     // reset the pipeline
   return 0;
+}
+
+//------------------------------------------------------------------------------
+// Enable events on IO device
+//------------------------------------------------------------------------------
+int32_t IO_event_enable(IO_io *io, uint16_t events)
+{
+  switch(io->type) {
+    case IO_UART:
+      return TM4C_event_enable_uart(io, events);
+  }
+  return -IO_ENOSYS;
+}
+
+//------------------------------------------------------------------------------
+// Disable events on IO device
+//------------------------------------------------------------------------------
+int32_t IO_event_disable(IO_io *io, uint16_t events)
+{
+  switch(io->type) {
+    case IO_UART:
+      return TM4C_event_disable_uart(io, events);
+  }
+  return -IO_ENOSYS;
 }
 
 //------------------------------------------------------------------------------
