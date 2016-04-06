@@ -555,6 +555,24 @@ int32_t IO_scan(IO_io *io, uint8_t type, void *data, uint32_t param)
 }
 
 //------------------------------------------------------------------------------
+// Enable events on IO device
+//------------------------------------------------------------------------------
+int32_t __IO_event_enable(IO_io *io, uint16_t events)
+{
+  return -IO_ENOSYS;
+}
+WEAK_ALIAS(__IO_event_enable, IO_event_enable);
+
+//------------------------------------------------------------------------------
+// Disable events on IO device
+//------------------------------------------------------------------------------
+int32_t __IO_event_disable(IO_io *io, uint16_t events)
+{
+  return -IO_ENOSYS;
+}
+WEAK_ALIAS(__IO_event_disable, IO_event_disable);
+
+//------------------------------------------------------------------------------
 // Enable interrupts
 //------------------------------------------------------------------------------
 void __IO_enable_interrupts() {}

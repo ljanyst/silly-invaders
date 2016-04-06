@@ -25,6 +25,7 @@
 // IO flags
 //------------------------------------------------------------------------------
 #define IO_NONBLOCKING 0x0001
+#define IO_ASYNC       0x0002
 
 //------------------------------------------------------------------------------
 // Initialize the IO modules
@@ -32,13 +33,26 @@
 int32_t IO_init();
 
 //------------------------------------------------------------------------------
+// IO types
+//------------------------------------------------------------------------------
+#define IO_UART 1
+
+//------------------------------------------------------------------------------
+// IO events
+//------------------------------------------------------------------------------
+#define IO_EVENT_READ  0x0001
+#define IO_EVENT_WRITE 0x0002
+
+//------------------------------------------------------------------------------
 // IO definition
 //------------------------------------------------------------------------------
 struct IO_io {
   int32_t (*write)(struct IO_io *io, const void *data, uint32_t length);
   int32_t (*read)(struct IO_io *io, void *data, uint32_t length);
+  void (*event)(struct IO_io *io, uint16_t event);
   void *data;
   uint16_t flags;
+  uint8_t  type;
 };
 
 typedef struct IO_io IO_io;
@@ -79,6 +93,24 @@ int32_t IO_read(IO_io *io, void *data, uint32_t length);
 // @return      number of bytes read from the device or an error
 //------------------------------------------------------------------------------
 int32_t IO_scan(IO_io *io, uint8_t type, void *data, uint32_t param);
+
+//------------------------------------------------------------------------------
+// Enable events on IO device
+//
+// @param io     io device
+// @param events ored events to enable
+// @return       0 on success, < 0 on error
+//------------------------------------------------------------------------------
+int32_t IO_event_enable(IO_io *io, uint16_t events);
+
+//------------------------------------------------------------------------------
+// Disable events on IO device
+//
+// @param io io device
+// @param    events ored events to disable
+// @return   0 on success, < 0 on error
+//------------------------------------------------------------------------------
+int32_t IO_event_disable(IO_io *io, uint16_t events);
 
 //------------------------------------------------------------------------------
 // Enable interrupts
