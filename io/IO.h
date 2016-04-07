@@ -50,9 +50,9 @@ struct IO_io {
   int32_t (*write)(struct IO_io *io, const void *data, uint32_t length);
   int32_t (*read)(struct IO_io *io, void *data, uint32_t length);
   void (*event)(struct IO_io *io, uint16_t event);
-  void *data;
   uint16_t flags;
   uint8_t  type;
+  uint8_t  channel;
 };
 
 typedef struct IO_io IO_io;
