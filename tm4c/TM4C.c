@@ -25,7 +25,7 @@
 //------------------------------------------------------------------------------
 // Initialize PLL
 //------------------------------------------------------------------------------
-void TM4C_init_PLL()
+void TM4C_pll_init()
 {
   // Section 5.3 of the data heet
 
@@ -65,7 +65,7 @@ void TM4C_init_PLL()
 //------------------------------------------------------------------------------
 int32_t IO_init()
 {
-  TM4C_init_PLL();
+  TM4C_pll_init();
 
   // Enable the floating point coprocessor
   CPAC_REG |= (0x0f << 20);
