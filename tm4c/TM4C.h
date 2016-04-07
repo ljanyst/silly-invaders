@@ -110,9 +110,3 @@
 #define UART_MODULE_OFFSET 0x1000
 
 #define UART_REG(MODULE, REG) (*(volatile unsigned long*)(UART_REG_BASE + MODULE + REG))
-
-//------------------------------------------------------------------------------
-// Enable/disable UART events
-//------------------------------------------------------------------------------
-int32_t TM4C_event_enable_uart(IO_io *io, uint16_t events);
-int32_t TM4C_event_disable_uart(IO_io *io, uint16_t events);

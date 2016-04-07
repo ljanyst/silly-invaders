@@ -216,7 +216,7 @@ int32_t IO_uart_init(IO_io *io, uint8_t module, uint16_t flags, uint32_t baud)
 //------------------------------------------------------------------------------
 // Enable events on UART device
 //------------------------------------------------------------------------------
-int32_t TM4C_event_enable_uart(IO_io *io, uint16_t events)
+int32_t TM4C_uart_event_enable(IO_io *io, uint16_t events)
 {
   uint32_t uart_offset = io->channel*UART_MODULE_OFFSET;
   if(events & IO_EVENT_READ)  UART_REG(uart_offset, UART_IM) |= 0x10;
@@ -227,7 +227,7 @@ int32_t TM4C_event_enable_uart(IO_io *io, uint16_t events)
 //------------------------------------------------------------------------------
 // Disable events on UART device
 //------------------------------------------------------------------------------
-int32_t TM4C_event_disable_uart(IO_io *io, uint16_t events)
+int32_t TM4C_uart_event_disable(IO_io *io, uint16_t events)
 {
   uint32_t uart_offset = io->channel*UART_MODULE_OFFSET;
   if(events & IO_EVENT_READ)  UART_REG(uart_offset, UART_IM) &= ~0x10;
