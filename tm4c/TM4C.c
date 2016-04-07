@@ -21,6 +21,7 @@
 #include <io/IO_error.h>
 #include "TM4C.h"
 #include "TM4C_uart.h"
+#include "TM4C_dma.h"
 
 //------------------------------------------------------------------------------
 // Initialize PLL
@@ -66,6 +67,7 @@ void TM4C_pll_init()
 int32_t IO_init()
 {
   TM4C_pll_init();
+  TM4C_dma_init();
 
   // Enable the floating point coprocessor
   CPAC_REG |= (0x0f << 20);

@@ -39,7 +39,25 @@
 #define GPIOHBCTL_REG        (*(volatile unsigned long *)0x400fe06c)
 #define RCC2_REG             (*(volatile unsigned long *)0x400fe070)
 #define RCGCGPIO_REG         (*(volatile unsigned long *)0x400fe608)
+#define RCGCDMA_REG          (*(volatile unsigned long *)0x400fe60c)
 #define RCGCUART_REG         (*(volatile unsigned long *)0x400fe618)
+
+//------------------------------------------------------------------------------
+// DMA
+//------------------------------------------------------------------------------
+#define DMACFG_REG           (*(volatile unsigned long *)0x400ff004)
+#define DMACTLBASE_REG       (*(volatile unsigned long *)0x400ff008)
+#define DMAUSEBURSTSET_REG   (*(volatile unsigned long *)0x400ff018)
+#define DMAUSEBURSTCLR_REG   (*(volatile unsigned long *)0x400ff01c)
+#define DMAREQMASKSET_REG    (*(volatile unsigned long *)0x400ff020)
+#define DMAREQMASKCLR_REG    (*(volatile unsigned long *)0x400ff024)
+#define DMAENASET_REG        (*(volatile unsigned long *)0x400ff028)
+#define DMAALTSET_REG        (*(volatile unsigned long *)0x400ff030)
+#define DMAALTCLR_REG        (*(volatile unsigned long *)0x400ff034)
+#define DMAPRIOSET_REG       (*(volatile unsigned long *)0x400ff038)
+#define DMAPRIOCLR_REG       (*(volatile unsigned long *)0x400ff03c)
+#define DMACHIS_REG          (*(volatile unsigned long *)0x400ff504)
+#define DMA_MAP_REG(NUM)     (*(volatile unsigned long *)(0x400ff510+4*NUM))
 
 //------------------------------------------------------------------------------
 // GPIO
@@ -105,7 +123,9 @@
 #define UART_IFLS          0x0034
 #define UART_IM            0x0038
 #define UART_RIS           0x003c
+#define UART_MIS           0x0040
 #define UART_ICR           0x0044
+#define UART_DMACTL        0x0048
 
 #define UART_MODULE_OFFSET 0x1000
 
