@@ -79,7 +79,7 @@ void uart7_handler() { uart_handler(7); }
 //------------------------------------------------------------------------------
 static int32_t uart_write_normal(IO_io *io, const void *data, uint32_t length)
 {
-  uint32_t uart_offset = (uint32_t)io->data;
+  uint32_t uart_offset = io->channel*UART_MODULE_OFFSET;
 
   const uint8_t *b_data = data;
   for(uint32_t i = 0; i < length; ++i) {
@@ -102,7 +102,7 @@ static int32_t uart_write_normal(IO_io *io, const void *data, uint32_t length)
 //------------------------------------------------------------------------------
 static int32_t uart_read_normal(IO_io *io, void *data, uint32_t length)
 {
-  uint32_t uart_offset = (uint32_t)io->data;
+  uint32_t uart_offset = io->channel*UART_MODULE_OFFSET;
   uint8_t *b_data = data;
   for(uint32_t i = 0; i < length; ++i) {
     // we cannot read if RXFE is 1
@@ -194,7 +194,7 @@ int32_t IO_uart_init(IO_io *io, uint8_t module, uint16_t flags, uint32_t baud)
   //----------------------------------------------------------------------------
   // Initialize the software
   //----------------------------------------------------------------------------
-  io->data = (void *)(uint32_t)uart_offset;
+  io->channel = module;
   io->flags = flags;
   io->write = uart_write_normal;
   io->read = uart_read_normal;
@@ -218,7 +218,7 @@ int32_t IO_uart_init(IO_io *io, uint8_t module, uint16_t flags, uint32_t baud)
 //------------------------------------------------------------------------------
 int32_t TM4C_event_enable_uart(IO_io *io, uint16_t events)
 {
-  uint32_t uart_offset = (uint32_t)io->data;
+  uint32_t uart_offset = io->channel*UART_MODULE_OFFSET;
   if(events & IO_EVENT_READ)  UART_REG(uart_offset, UART_IM) |= 0x10;
   if(events & IO_EVENT_WRITE) UART_REG(uart_offset, UART_IM) |= 0x20;
   return 0;
@@ -229,7 +229,7 @@ int32_t TM4C_event_enable_uart(IO_io *io, uint16_t events)
 //------------------------------------------------------------------------------
 int32_t TM4C_event_disable_uart(IO_io *io, uint16_t events)
 {
-  uint32_t uart_offset = (uint32_t)io->data;
+  uint32_t uart_offset = io->channel*UART_MODULE_OFFSET;
   if(events & IO_EVENT_READ)  UART_REG(uart_offset, UART_IM) &= ~0x10;
   if(events & IO_EVENT_WRITE) UART_REG(uart_offset, UART_IM) &= ~0x20;
   return 0;
