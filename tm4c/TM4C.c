@@ -21,6 +21,7 @@
 #include <io/IO_error.h>
 #include "TM4C.h"
 #include "TM4C_uart.h"
+#include "TM4C_ssi.h"
 #include "TM4C_dma.h"
 
 //------------------------------------------------------------------------------
@@ -85,6 +86,8 @@ int32_t IO_event_enable(IO_io *io, uint16_t events)
   switch(io->type) {
     case IO_UART:
       return TM4C_uart_event_enable(io, events);
+    case IO_SSI:
+      return TM4C_ssi_event_enable(io, events);
   }
   return -IO_ENOSYS;
 }
@@ -97,6 +100,8 @@ int32_t IO_event_disable(IO_io *io, uint16_t events)
   switch(io->type) {
     case IO_UART:
       return TM4C_uart_event_disable(io, events);
+    case IO_SSI:
+      return TM4C_ssi_event_disable(io, events);
   }
   return -IO_ENOSYS;
 }

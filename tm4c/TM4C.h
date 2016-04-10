@@ -41,6 +41,7 @@
 #define RCGCGPIO_REG         (*(volatile unsigned long *)0x400fe608)
 #define RCGCDMA_REG          (*(volatile unsigned long *)0x400fe60c)
 #define RCGCUART_REG         (*(volatile unsigned long *)0x400fe618)
+#define RCGCSSI_REG          (*(volatile unsigned long *)0x400fe61c)
 
 //------------------------------------------------------------------------------
 // DMA
@@ -130,3 +131,21 @@
 #define UART_MODULE_OFFSET 0x1000
 
 #define UART_REG(MODULE, REG) (*(volatile unsigned long*)(UART_REG_BASE + MODULE + REG))
+
+//------------------------------------------------------------------------------
+// SSI
+//------------------------------------------------------------------------------
+#define SSI_REG_BASE      0x40008000
+#define SSI_CR0           0x0000
+#define SSI_CR1           0x0004
+#define SSI_DR            0x0008
+#define SSI_SR            0x000c
+#define SSI_CPSR          0x0010
+#define SSI_IM            0x0014
+#define SSI_MIS           0x001c
+#define SSI_DMACTL        0x0024
+#define SSI_CC            0x0fc8
+
+#define SSI_MODULE_OFFSET 0x1000
+
+#define SSI_REG(MODULE, REG) (*(volatile unsigned long*)(SSI_REG_BASE + MODULE + REG))
