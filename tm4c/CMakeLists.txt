@@ -4,4 +4,5 @@ add_library(
   TM4C_startup.c
   TM4C_uart.c
   TM4C_dma.c
+  TM4C_gpio.c
   TM4C.c)
