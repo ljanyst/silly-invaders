@@ -21,6 +21,7 @@
 #include <io/IO_error.h>
 #include "TM4C.h"
 #include "TM4C_dma.h"
+#include "TM4C_gpio.h"
 
 //------------------------------------------------------------------------------
 // GPIO pins for UART
@@ -243,43 +244,26 @@ int32_t IO_uart_init(IO_io *io, uint8_t module, uint16_t flags, uint32_t baud)
   uint8_t  port        = uart_info[module].gpio_port;
   uint8_t  rx          = uart_info[module].gpio_pin_rx;
   uint8_t  tx          = uart_info[module].gpio_pin_tx;
-  uint16_t port_offset = port * GPIO_PORT_OFFSET;
   uint16_t uart_offset = module * UART_MODULE_OFFSET;
 
-  // enable the uart cloc
+  // enable the uart clock
   RCGCUART_REG |= (1 << module);
 
-  // enable the AHB and GPIO clock
-  GPIOHBCTL_REG |= (1 << port);
-  RCGCGPIO_REG  |= (1 << port);
+  //----------------------------------------------------------------------------
+  // Set the GPIO up
+  //----------------------------------------------------------------------------
+  TM4C_gpio_port_init(port);
 
   // PD7 is reserved for NMI and needs to be unlocked
-  if(module == 2) {
-    GPIO_REG(GPIO_PORTD, GPIO_LOCK)  = 0x4c4f434b;
-    GPIO_REG(GPIO_PORTD, GPIO_CR)   |= 0x80;
-  }
+  if(module == 2)
+    TM4C_gpio_pin_unlock(port, tx);
 
-  // enable alternative function of the pins
-  GPIO_REG(port_offset, GPIO_AFSEL) |= (1 << rx);
-  GPIO_REG(port_offset, GPIO_AFSEL) |= (1 << tx);
+  TM4C_gpio_pin_init(port, rx, 1, 0, 0);
+  TM4C_gpio_pin_init(port, tx, 1, 0, 1);
 
-  GPIO_REG(port_offset, GPIO_PCTL) &= ~(0x0f << (rx*4));
-  GPIO_REG(port_offset, GPIO_PCTL) &= ~(0x0f << (tx*4));
-  GPIO_REG(port_offset, GPIO_PCTL) |=  (0x01 << (rx*4));
-  GPIO_REG(port_offset, GPIO_PCTL) |=  (0x01 << (tx*4));
-
-  // disable the analog function of the pins
-  GPIO_REG(port_offset, GPIO_AMSEL) &= ~(1 << rx);
-  GPIO_REG(port_offset, GPIO_AMSEL) &= ~(1 << tx);
-
-  // set pin directions
-  GPIO_REG(port_offset, GPIO_DIR) &= ~(1 << rx);
-  GPIO_REG(port_offset, GPIO_DIR) |= (1 << tx);
-
-  // enable the pins
-  GPIO_REG(port_offset, GPIO_DEN) |= (1 << rx);
-  GPIO_REG(port_offset, GPIO_DEN) |= (1 << tx);
-
+  //----------------------------------------------------------------------------
+  // Configure UART
+  //----------------------------------------------------------------------------
   // calculate the desired baud rate
   float brd = ((float)80000000) / (16.0 * baud);
   unsigned long ibrd = (int)brd;
