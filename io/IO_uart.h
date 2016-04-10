@@ -22,7 +22,7 @@
 #include "IO.h"
 
 //------------------------------------------------------------------------------
-// Open UART device and create the associated input and output structures
+// Open an UART device and create the associated IO structure
 //
 // @param io     the io structure to be initialized
 // @param module UART module number to be configured
