@@ -48,3 +48,19 @@ void TM4C_dma_init();
 // @param type    DMA_TYPE_PRIMARY or DMA_TYPE_ALTERNATE
 //------------------------------------------------------------------------------
 dma_control *TM4C_dma_get_control(uint8_t channel, uint8_t type);
+
+//------------------------------------------------------------------------------
+// Initiate the DMA transfer
+//
+// @param channel DMA channel
+// @param end     channel encoding
+//------------------------------------------------------------------------------
+void TM4C_dma_run_transfer(uint8_t channel, uint8_t enc);
+
+//------------------------------------------------------------------------------
+// Check the interrupt status for the given channel
+//
+// @param channel DMA channel
+// @param enc     channel encoding
+//------------------------------------------------------------------------------
+int TM4C_dma_check_interrupt(uint8_t channel, uint8_t enc);

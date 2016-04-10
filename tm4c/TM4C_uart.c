@@ -52,24 +52,6 @@ static const struct uart_data uart_info[] = {
 static struct IO_io *uart_devices[8];
 
 //------------------------------------------------------------------------------
-// Check DMA channel interrupt
-//------------------------------------------------------------------------------
-static int check_dma_interrupt(uint8_t channel, uint8_t enc)
-{
-  uint8_t enc_reg = channel / 8;
-  uint8_t enc_field = (channel % 8) * 4;
-
-  if(((DMA_MAP_REG(enc_reg) >> enc_field) & 0x0f) != enc)
-    return 0;
-
-  if(DMACHIS_REG & (1 << channel)) {
-    DMACHIS_REG |= (1 << channel);
-    return 1;
-  }
-  return 0;
-}
-
-//------------------------------------------------------------------------------
 // Handle uart interrupt
 //------------------------------------------------------------------------------
 static void uart_handler(uint8_t module)
@@ -81,7 +63,7 @@ static void uart_handler(uint8_t module)
   if(UART_REG(module_offset, UART_MIS) & 0x20) events |= IO_EVENT_WRITE;
 
   //----------------------------------------------------------------------------
-  // No know events but we have still been called. Check if we got a DMA
+  // No known events but we have still been called. Check if we got a DMA
   // interrupt
   //----------------------------------------------------------------------------
   if(!events) {
@@ -89,10 +71,10 @@ static void uart_handler(uint8_t module)
     uint8_t channel_tx = uart_info[module].dma_channel_tx;
     uint8_t enc = uart_info[module].dma_channel_enc;
 
-    if(check_dma_interrupt(channel_rx, enc))
+    if(TM4C_dma_check_interrupt(channel_rx, enc))
       events |= IO_EVENT_DMA_READ;
 
-    if(check_dma_interrupt(channel_tx, enc))
+    if(TM4C_dma_check_interrupt(channel_tx, enc))
       events |= IO_EVENT_DMA_WRITE;
   }
 
@@ -116,7 +98,7 @@ void uart6_handler() { uart_handler(6); }
 void uart7_handler() { uart_handler(7); }
 
 //------------------------------------------------------------------------------
-// Write a byte to given UART
+// Write to given UART
 //------------------------------------------------------------------------------
 static int32_t uart_write_normal(IO_io *io, const void *data, uint32_t length)
 {
@@ -139,7 +121,7 @@ static int32_t uart_write_normal(IO_io *io, const void *data, uint32_t length)
 }
 
 //------------------------------------------------------------------------------
-// Read a byte from given UART
+// Read from given UART
 //------------------------------------------------------------------------------
 static int32_t uart_read_normal(IO_io *io, void *data, uint32_t length)
 {
@@ -158,22 +140,6 @@ static int32_t uart_read_normal(IO_io *io, void *data, uint32_t length)
     b_data[i] = UART_REG(uart_offset, UART_DR) & 0xff;
   }
   return length;
-}
-
-//------------------------------------------------------------------------------
-// Initiate the DMA transfer on the given chanel and encoding
-//------------------------------------------------------------------------------
-static void run_dma_transfer(uint8_t channel, uint8_t enc)
-{
-  // set channel encoding
-  uint8_t enc_reg = channel / 8;
-  uint8_t enc_field = (channel % 8) * 4;
-  DMA_MAP_REG(enc_reg) &= ~(0x0f << enc_field);
-  DMA_MAP_REG(enc_reg) |= ((enc & 0x0f) << enc_field);
-  DMAPRIOCLR_REG       |= (1 << channel); // clear the priority bit
-  DMAALTCLR_REG        |= (1 << channel); // clear the alternate control bit
-  DMAUSEBURSTCLR_REG   |= (1 << channel); // clear the burst bit
-  DMAENASET_REG        |= (1 << channel); // run the transfer
 }
 
 //------------------------------------------------------------------------------
@@ -214,7 +180,7 @@ static int32_t uart_write_dma(IO_io *io, const void *data, uint32_t length)
   ctrl->control |= ((length-1) << 4); // transfer size, up to 1024 bytes
   ctrl->control |= 0x01;              // basic transfer mode
 
-  run_dma_transfer(dma_channel, dma_enc);
+  TM4C_dma_run_transfer(dma_channel, dma_enc);
   return length;
 }
 
@@ -256,7 +222,7 @@ static int32_t uart_read_dma(IO_io *io, void *data, uint32_t length)
   ctrl->control |= ((length-1) << 4); // transfer size, up to 1024 bytes
   ctrl->control |= 0x01;              // basic transfer mode
 
-  run_dma_transfer(dma_channel, dma_enc);
+  TM4C_dma_run_transfer(dma_channel, dma_enc);
   return length;
 }
 
