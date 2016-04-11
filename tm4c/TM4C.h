@@ -89,6 +89,10 @@
 
 #define GPIO_DATA        0x03fc
 #define GPIO_DIR         0x0400
+#define GPIO_IBE         0x0408
+#define GPIO_IM          0x0410
+#define GPIO_MIS         0x0418
+#define GPIO_ICR         0x041c
 #define GPIO_AFSEL       0x0420
 #define GPIO_PUR         0x0510
 #define GPIO_DEN         0x051c
@@ -101,6 +105,7 @@
 #define GPIO_PORT_OFFSET 0x1000
 
 #define GPIO_REG(PORT, REG) (*(volatile unsigned long*)(GPIO_REG_BASE + PORT + REG))
+#define GPIO_DATA_REG(PORT, PIN) (*(volatile unsigned long*)(GPIO_REG_BASE + PORT + (1 << (PIN+2))))
 
 //------------------------------------------------------------------------------
 // UART

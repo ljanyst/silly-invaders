@@ -36,3 +36,9 @@ void TM4C_gpio_pin_init(uint8_t port, uint8_t pin, uint8_t afsel,
 // Unlock GPIO pin
 //------------------------------------------------------------------------------
 void TM4C_gpio_pin_unlock(uint8_t port, uint8_t pin);
+
+//------------------------------------------------------------------------------
+// Enable/disable GPIO events
+//------------------------------------------------------------------------------
+int32_t TM4C_gpio_event_enable(IO_io *io, uint16_t events);
+int32_t TM4C_gpio_event_disable(IO_io *io, uint16_t events);
