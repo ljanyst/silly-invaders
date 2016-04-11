@@ -47,8 +47,8 @@ int main()
   button[0].event = button_event;
   button[1].event = button_event;
   PULLUP_REG |= 0x11;
-  IO_event_enable(&button[0], IO_EVENT_GPIO);
-  IO_event_enable(&button[1], IO_EVENT_GPIO);
+  IO_event_enable(&button[0], IO_EVENT_CHANGE);
+  IO_event_enable(&button[1], IO_EVENT_CHANGE);
 
   while(1)
     IO_wait_for_interrupt();

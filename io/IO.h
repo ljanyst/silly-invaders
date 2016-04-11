@@ -47,7 +47,7 @@ int32_t IO_init();
 #define IO_EVENT_WRITE     0x0002
 #define IO_EVENT_DMA_READ  0x0004
 #define IO_EVENT_DMA_WRITE 0x0008
-#define IO_EVENT_GPIO      0x0010
+#define IO_EVENT_CHANGE    0x0010
 
 //------------------------------------------------------------------------------
 // IO definition

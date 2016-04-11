@@ -93,7 +93,7 @@ static void gpio_handler(uint8_t port)
   for(int i = 0; i < 8; ++i) {
     if(GPIO_REG(port_offset, GPIO_MIS) & (1 << i)) {
       if(gpio_devices[pi+i] && gpio_devices[pi+i]->event)
-        gpio_devices[pi+i]->event(gpio_devices[pi+i], IO_EVENT_GPIO);
+        gpio_devices[pi+i]->event(gpio_devices[pi+i], IO_EVENT_CHANGE);
       GPIO_REG(port_offset, GPIO_ICR) |= (1 << i); // ack the interrupt
     }
   }
@@ -222,7 +222,7 @@ void IO_gpio_set_state(IO_io *io, uint8_t state)
 //------------------------------------------------------------------------------
 int32_t TM4C_gpio_event_enable(IO_io *io, uint16_t events)
 {
-  if(events != IO_EVENT_GPIO)
+  if(events != IO_EVENT_CHANGE)
     return -IO_EINVAL;
 
   int port = (io->channel / 8) * GPIO_PORT_OFFSET;
@@ -237,7 +237,7 @@ int32_t TM4C_gpio_event_enable(IO_io *io, uint16_t events)
 //------------------------------------------------------------------------------
 int32_t TM4C_gpio_event_disable(IO_io *io, uint16_t events)
 {
-  if(events != IO_EVENT_GPIO)
+  if(events != IO_EVENT_CHANGE)
     return -IO_EINVAL;
 
   int port = (io->channel / 8) * GPIO_PORT_OFFSET;
