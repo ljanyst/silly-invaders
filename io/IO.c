@@ -589,3 +589,11 @@ WEAK_ALIAS(__IO_disable_interrupts, IO_disable_interrupts);
 //------------------------------------------------------------------------------
 void __IO_wait_for_interrupt() {}
 WEAK_ALIAS(__IO_wait_for_interrupt, IO_wait_for_interrupt);
+
+//------------------------------------------------------------------------------
+// Sync
+//------------------------------------------------------------------------------
+uint32_t IO_sync(IO_io *io)
+{
+  return io->sync(io);
+}
