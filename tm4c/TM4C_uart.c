@@ -228,6 +228,18 @@ static int32_t uart_read_dma(IO_io *io, void *data, uint32_t length)
 }
 
 //------------------------------------------------------------------------------
+// Sync uart
+//------------------------------------------------------------------------------
+static int32_t uart_sync(IO_io *io)
+{
+  uint32_t uart_offset = io->channel*UART_MODULE_OFFSET;
+  // the UART busy bit is set until all complete bytes, including the stop bits
+  // have been transmitted
+  while(UART_REG(uart_offset, UART_FR) & 0x08);
+  return 0;
+}
+
+//------------------------------------------------------------------------------
 // Initialize given UART module
 //------------------------------------------------------------------------------
 int32_t IO_uart_init(IO_io *io, uint8_t module, uint16_t flags, uint32_t baud)
@@ -292,6 +304,7 @@ int32_t IO_uart_init(IO_io *io, uint8_t module, uint16_t flags, uint32_t baud)
   io->flags = flags;
   io->type = IO_UART;
   io->event = 0;
+  io->sync = uart_sync;
   uart_devices[module] = io;
 
   //----------------------------------------------------------------------------

@@ -159,6 +159,15 @@ static int32_t gpio_read(IO_io *io, void *data, uint32_t length)
 }
 
 //------------------------------------------------------------------------------
+// Sync gpio
+//------------------------------------------------------------------------------
+static int32_t gpio_sync(IO_io *io)
+{
+  return 0;
+}
+
+
+//------------------------------------------------------------------------------
 // Initialize a GPIO pin
 //------------------------------------------------------------------------------
 int32_t IO_gpio_init(IO_io *io, uint8_t pin, uint16_t flags, uint8_t dir)
@@ -195,6 +204,7 @@ int32_t IO_gpio_init(IO_io *io, uint8_t pin, uint16_t flags, uint8_t dir)
   io->event   = 0;
   io->read    = gpio_read;
   io->write   = gpio_write;
+  io->sync    = gpio_sync;
   gpio_devices[pin] = io;
   return 0;
 }
