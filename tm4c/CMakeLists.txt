@@ -10,4 +10,5 @@ add_library(
 
 add_library(
   tm4c_platform_01 STATIC
-  TM4C_platform_01.c)
+  TM4C_platform_01.c
+  TM4C_platform_01_display.c)
