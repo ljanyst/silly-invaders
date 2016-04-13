@@ -4,5 +4,6 @@ add_library(
   IO.c
   IO_uart.c
   IO_ssi.c
-  IO_gpio.c)
+  IO_gpio.c
+  IO_display.c)
 
