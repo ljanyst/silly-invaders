@@ -23,3 +23,8 @@
 // Make a weak alias of the given function
 //------------------------------------------------------------------------------
 #define WEAK_ALIAS(FUNC, ALIAS) __typeof (FUNC) ALIAS __attribute__ ((weak, alias (#FUNC)))
+
+//------------------------------------------------------------------------------
+// Access 1d array as 2d
+//------------------------------------------------------------------------------
+#define ARR2D(A, X, Y, WIDTH) A[Y*WIDTH+X]
