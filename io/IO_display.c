@@ -79,3 +79,19 @@ int32_t __IO_display_put_pixel(IO_io *io, uint16_t x, uint16_t y, uint32_t argb)
 }
 
 WEAK_ALIAS(__IO_display_put_pixel, IO_display_put_pixel);
+
+//------------------------------------------------------------------------------
+// Print bitmap
+//------------------------------------------------------------------------------
+int32_t __IO_display_print_bitmap(IO_io *io, uint16_t x, uint16_t y,
+  const IO_bitmap *bitmap)
+{
+  const char *data = bitmap->data;
+  uint16_t w = bitmap->width;
+  for(int i = 0; i < w; ++i)
+    for(int j = 0; j < bitmap->height; ++j)
+      IO_display_put_pixel(io, x+i, y+j, ARR2D(data, i, j, w));
+  return 0;
+}
+
+WEAK_ALIAS(__IO_display_print_bitmap, IO_display_print_bitmap);
