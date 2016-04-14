@@ -17,13 +17,52 @@
 // along with silly-invaders.  If not, see <http://www.gnu.org/licenses/>.
 //------------------------------------------------------------------------------
 
+#define __IO_IMPL__
+
 #include <io/IO.h>
 #include <io/IO_error.h>
+#include <io/IO_malloc_low.h>
 #include "TM4C.h"
 #include "TM4C_uart.h"
 #include "TM4C_ssi.h"
 #include "TM4C_gpio.h"
 #include "TM4C_dma.h"
+
+extern unsigned long __bss_end_vma;
+
+//------------------------------------------------------------------------------
+// Set up heap
+//------------------------------------------------------------------------------
+void TM4C_heap_init()
+{
+  uint8_t *stack_start = (uint8_t *)0x20007ff8;
+  uint8_t *stack_end   = stack_start-4120;
+  uint8_t *stack_guard = stack_end-32;
+  uint8_t *heap_start  = (uint8_t *)&__bss_end_vma;
+
+  //----------------------------------------------------------------------------
+  // Protect the guard chunk
+  //----------------------------------------------------------------------------
+  MPUCTRL_REG |= (uint32_t)0x05; // enable MPU and the background region
+
+  uint32_t val = (uint32_t)stack_guard;
+  val |= 0x10; // valid
+  val |= 0x07; // highest priority region
+  MPUBASE_REG &= ~0xfffffff7;
+  MPUBASE_REG |= val;
+
+  val = 0;
+  val |= (1 << 28); // disable instruction fetches
+  val |= (4 << 1);  // 0x04 == 32bytes
+  val |= 1;         // enable the region
+  MPUATTR_REG &= ~0x173fff3f;
+  MPUATTR_REG |= val;
+
+  //----------------------------------------------------------------------------
+  // Set up the heap
+  //----------------------------------------------------------------------------
+  IO_set_up_heap(heap_start, stack_guard);
+}
 
 //------------------------------------------------------------------------------
 // Initialize PLL
@@ -70,6 +109,7 @@ int32_t TM4C_init()
 {
   TM4C_pll_init();
   TM4C_dma_init();
+  TM4C_heap_init();
 
   // Enable the floating point coprocessor
   CPAC_REG |= (0x0f << 20);

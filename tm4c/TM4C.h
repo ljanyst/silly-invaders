@@ -35,6 +35,9 @@
 #define NVIC_EN_REG(NUM)     (*(volatile unsigned long *)(0xe000e100+4*NUM))
 #define SYSPRI3_REG          (*(volatile unsigned long *)0xe000ed20)
 #define CPAC_REG             (*(volatile unsigned long *)0xe000ed88)
+#define MPUCTRL_REG          (*(volatile unsigned long *)0xe000ed94)
+#define MPUBASE_REG          (*(volatile unsigned long *)0xe000ed9c)
+#define MPUATTR_REG          (*(volatile unsigned long *)0xe000eda0)
 
 #define RIS_REG              (*(volatile unsigned long *)0x400fe050)
 #define RCC_REG              (*(volatile unsigned long *)0x400fe060)
