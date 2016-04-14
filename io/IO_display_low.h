@@ -26,14 +26,14 @@
 #include "IO.h"
 
 //------------------------------------------------------------------------------
-// Initialize a display device
-//
-// @param io     the io structure to be initialized
-// @param module number of a display device to be configured
+//! Initialize a display device
+//!
+//! @param io     the io structure to be initialized
+//! @param module number of a display device to be configured
 //------------------------------------------------------------------------------
 int32_t IO_display_init_low(IO_io *io, uint8_t module);
 
 //------------------------------------------------------------------------------
-// Get parameters of the device
+//! Get parameters of the device
 //------------------------------------------------------------------------------
 int32_t IO_display_get_attrs_low(IO_io *io, IO_display_attrs *attrs);

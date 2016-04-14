@@ -22,19 +22,19 @@
 #include <stdint.h>
 
 //------------------------------------------------------------------------------
-// DMA control structure
+//! DMA control structure
 //------------------------------------------------------------------------------
 struct dma_control {
-  void *src;
-  void *dst;
-  uint32_t control;
-  uint32_t reserved;
+  void *src;            //!< source address
+  void *dst;            //!< destination address
+  uint32_t control;     //!< control word
+  uint32_t reserved;    //!< reserved
 };
 
 typedef struct dma_control dma_control;
 
 //------------------------------------------------------------------------------
-// Initialize the DMA controller
+//! Initialize the DMA controller
 //------------------------------------------------------------------------------
 void TM4C_dma_init();
 
@@ -42,25 +42,25 @@ void TM4C_dma_init();
 #define DMA_TYPE_ALTERNATE 1
 
 //------------------------------------------------------------------------------
-// Get the DMA control structure for the given channel
-//
-// @param channel the channel numbe
-// @param type    DMA_TYPE_PRIMARY or DMA_TYPE_ALTERNATE
+//! Get the DMA control structure for the given channel
+//!
+//! @param channel the channel numbe
+//! @param type    DMA_TYPE_PRIMARY or DMA_TYPE_ALTERNATE
 //------------------------------------------------------------------------------
 dma_control *TM4C_dma_get_control(uint8_t channel, uint8_t type);
 
 //------------------------------------------------------------------------------
-// Initiate the DMA transfer
-//
-// @param channel DMA channel
-// @param end     channel encoding
+//! Initiate the DMA transfer
+//!
+//! @param channel DMA channel
+//! @param end     channel encoding
 //------------------------------------------------------------------------------
 void TM4C_dma_run_transfer(uint8_t channel, uint8_t enc);
 
 //------------------------------------------------------------------------------
-// Check the interrupt status for the given channel
-//
-// @param channel DMA channel
-// @param enc     channel encoding
+//! Check the interrupt status for the given channel
+//!
+//! @param channel DMA channel
+//! @param enc     channel encoding
 //------------------------------------------------------------------------------
 int TM4C_dma_check_interrupt(uint8_t channel, uint8_t enc);

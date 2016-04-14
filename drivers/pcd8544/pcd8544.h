@@ -24,40 +24,40 @@
 #include <stdint.h>
 
 //------------------------------------------------------------------------------
-// PCD8544 device
+//! PCD8544 device
 //------------------------------------------------------------------------------
 struct pcd8544 {
-  IO_io reset;            //! Reset GPIO
-  IO_io dc;               //! Data/~Command GPIO
-  IO_io ssi;              //! Communication interface
-  uint8_t pixels[6][84];  //! Pixel matrix
+  IO_io reset;            //!< Reset GPIO
+  IO_io dc;               //!< Data/~Command GPIO
+  IO_io ssi;              //!< Communication interface
+  uint8_t pixels[6][84];  //!< Pixel matrix
 };
 
 typedef struct pcd8544 pcd8544;
 
 //------------------------------------------------------------------------------
-// Initialize the device
+//! Initialize the device
 //------------------------------------------------------------------------------
 int32_t PCD8544_init(pcd8544 *device, uint8_t ssi_module, uint8_t dc_pin,
   uint8_t reset_pin);
 
 //------------------------------------------------------------------------------
-// Get attributes
+//! Get attributes
 //------------------------------------------------------------------------------
 int32_t PCD8544_get_attrs(IO_display_attrs *attrs);
 
 //------------------------------------------------------------------------------
-// Clear all the pixels
+//! Clear all the pixels
 //------------------------------------------------------------------------------
 int32_t PCD8544_clear(pcd8544 *device);
 
 //------------------------------------------------------------------------------
-// Put a pixel
+//! Put a pixel
 //------------------------------------------------------------------------------
 int32_t PCD8544_put_pixel(pcd8544 *device, uint16_t x, uint16_t y,
   uint32_t argb);
 
 //------------------------------------------------------------------------------
-// Write the picel matrix to the device
+//! Write the picel matrix to the device
 //------------------------------------------------------------------------------
 int32_t PCD8544_sync(pcd8544 *device);

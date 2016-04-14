@@ -29,7 +29,7 @@
 #define IO_DMA         0x0004
 
 //------------------------------------------------------------------------------
-// Initialize the IO modules
+//! Initialize the IO modules
 //------------------------------------------------------------------------------
 int32_t IO_init();
 
@@ -51,7 +51,7 @@ int32_t IO_init();
 #define IO_EVENT_CHANGE    0x0010
 
 //------------------------------------------------------------------------------
-// IO definition
+//! IO definition
 //------------------------------------------------------------------------------
 struct IO_io {
   int32_t (*write)(struct IO_io *io, const void *data, uint32_t length);
@@ -66,17 +66,17 @@ struct IO_io {
 typedef struct IO_io IO_io;
 
 //------------------------------------------------------------------------------
-// Write to an IO device
+//! Write to an IO device
 //------------------------------------------------------------------------------
 int32_t IO_write(IO_io *io, const void *data, uint32_t length);
 
 //------------------------------------------------------------------------------
-// Print to an IO device - similar to printf
+//! Print to an IO device - similar to printf
 //------------------------------------------------------------------------------
 int32_t IO_print(IO_io *io, const char *format, ...);
 
 //------------------------------------------------------------------------------
-// Read from and IO device
+//! Read from and IO device
 //------------------------------------------------------------------------------
 int32_t IO_read(IO_io *io, void *data, uint32_t length);
 
@@ -91,51 +91,51 @@ int32_t IO_read(IO_io *io, void *data, uint32_t length);
 #define IO_DOUBLE 5
 
 //------------------------------------------------------------------------------
-// Read and parse data from the input
-//
-// @param io    the io device
-// @param type  type of data to by read
-// @param data  buffer for the data
-// @param param length of the buffer when IO_STRING is requested or base
-//              of the integer when an IO_UINT type is requested
-// @return      number of bytes read from the device or an error
+//! Read and parse data from the input
+//!
+//! @param io    the io device
+//! @param type  type of data to by read
+//! @param data  buffer for the data
+//! @param param length of the buffer when IO_STRING is requested or base
+//!              of the integer when an IO_UINT type is requested
+//! @return      number of bytes read from the device or an error
 //------------------------------------------------------------------------------
 int32_t IO_scan(IO_io *io, uint8_t type, void *data, uint32_t param);
 
 //------------------------------------------------------------------------------
-// Enable events on IO device
-//
-// @param io     io device
-// @param events ored events to enable
-// @return       0 on success, < 0 on error
+//! Enable events on IO device
+//!
+//! @param io     io device
+//! @param events ored events to enable
+//! @return       0 on success, < 0 on error
 //------------------------------------------------------------------------------
 int32_t IO_event_enable(IO_io *io, uint16_t events);
 
 //------------------------------------------------------------------------------
-// Disable events on IO device
-//
-// @param io io device
-// @param    events ored events to disable
-// @return   0 on success, < 0 on error
+//! Disable events on IO device
+//!
+//! @param io io device
+//! @param    events ored events to disable
+//! @return   0 on success, < 0 on error
 //------------------------------------------------------------------------------
 int32_t IO_event_disable(IO_io *io, uint16_t events);
 
 //------------------------------------------------------------------------------
-// Enable interrupts
+//! Enable interrupts
 //------------------------------------------------------------------------------
 void IO_enable_interrupts();
 
 //------------------------------------------------------------------------------
-// Disable interrupts
+//! Disable interrupts
 //------------------------------------------------------------------------------
 void IO_disable_interrupts();
 
 //------------------------------------------------------------------------------
-// Wait for an interrupt
+//! Wait for an interrupt
 //------------------------------------------------------------------------------
 void IO_wait_for_interrupt();
 
 //------------------------------------------------------------------------------
-// Sync - make sure that all the buffered data has been transmitted
+//! Sync - make sure that all the buffered data has been transmitted
 //------------------------------------------------------------------------------
 uint32_t IO_sync(IO_io *io);

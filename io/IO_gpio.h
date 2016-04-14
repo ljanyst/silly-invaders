@@ -22,21 +22,21 @@
 #include "IO.h"
 
 //------------------------------------------------------------------------------
-// Initialize a GPIO pin
-//
-// @param io    the io structure to be initialized
-// @param pin   number of the pin to initialize
-// @param flags flags, IO_ASYNC can be passed to receive edge events
-// @param dir   0 - input, 1 - output
+//! Initialize a GPIO pin
+//!
+//! @param io    the io structure to be initialized
+//! @param pin   number of the pin to initialize
+//! @param flags flags, IO_ASYNC can be passed to receive edge events
+//! @param dir   0 - input, 1 - output
 //------------------------------------------------------------------------------
 int32_t IO_gpio_init(IO_io *io, uint8_t pin, uint16_t flags, uint8_t dir);
 
 //------------------------------------------------------------------------------
-// Get state of the pin
+//! Get state of the pin
 //------------------------------------------------------------------------------
 int32_t IO_gpio_get_state(IO_io *io);
 
 //------------------------------------------------------------------------------
-// Set state of the pin
+//! Set state of the pin
 //------------------------------------------------------------------------------
 void IO_gpio_set_state(IO_io *io, uint8_t state);

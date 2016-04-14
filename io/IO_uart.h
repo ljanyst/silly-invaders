@@ -22,11 +22,11 @@
 #include "IO.h"
 
 //------------------------------------------------------------------------------
-// Open an UART device and create the associated IO structure
-//
-// @param io     the io structure to be initialized
-// @param module UART module number to be configured
-// @param flags  flags
-// @param baud   baud rate of the device
+//! Open an UART device and create the associated IO structure
+//!
+//! @param io     the io structure to be initialized
+//! @param module UART module number to be configured
+//! @param flags  flags
+//! @param baud   baud rate of the device
 //------------------------------------------------------------------------------
 int32_t IO_uart_init(IO_io *io, uint8_t module, uint16_t flags, uint32_t baud);

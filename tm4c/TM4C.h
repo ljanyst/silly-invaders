@@ -161,6 +161,6 @@
 #define SSI_REG(MODULE, REG) (*(volatile unsigned long*)(SSI_REG_BASE + MODULE + REG))
 
 //------------------------------------------------------------------------------
-// Initialize the board
+//! Initialize the board
 //------------------------------------------------------------------------------
 int32_t TM4C_init();
