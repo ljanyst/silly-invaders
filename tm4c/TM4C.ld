@@ -46,4 +46,10 @@ SECTIONS
     *(COMMON)	/* non-ISO C bulshit, just in case */
     __bss_end_vma = .;
   } > RAM
+
+  /DISCARD/ :
+  {
+    *(.init*)
+    *(.fini*)
+  }
 }
