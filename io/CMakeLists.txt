@@ -20,5 +20,6 @@ add_library(
   IO_gpio.c
   IO_display.c
   IO_malloc.c
+  IO_font.c
   fonts/DejaVuSans-10.c
   fonts/RobotoRegular-12.c)
