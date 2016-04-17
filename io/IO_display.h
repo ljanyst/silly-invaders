@@ -20,6 +20,7 @@
 #pragma once
 
 #include "IO.h"
+#include "IO_font.h"
 
 //------------------------------------------------------------------------------
 //! Initialize a display device
@@ -35,6 +36,8 @@ int32_t IO_display_init(IO_io *io, uint8_t module);
 struct IO_display_attrs {
   uint16_t width;       //!< width in pixels
   uint16_t height;      //!< height in pixels
+  uint16_t line_height; //!< line height
+  uint16_t space_width; //!< space width
   uint8_t  color_depth; //!< color depth in bits per pixel
 };
 
@@ -77,3 +80,8 @@ typedef struct IO_bitmap IO_bitmap;
 //------------------------------------------------------------------------------
 int32_t IO_display_print_bitmap(IO_io *io, uint16_t x, uint16_t y,
   const IO_bitmap *bitmap);
+
+//------------------------------------------------------------------------------
+//! Set font for the display
+//------------------------------------------------------------------------------
+int32_t IO_display_set_font(IO_io *io, const IO_font *font);

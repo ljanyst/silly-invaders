@@ -23,13 +23,114 @@
 #include "IO_display_low.h"
 #include "IO_error.h"
 #include "IO_utils.h"
+#include "IO_malloc.h"
+
+#include <string.h>
+
+//------------------------------------------------------------------------------
+// Internal display information
+//------------------------------------------------------------------------------
+struct display {
+  const IO_font *font;
+  uint16_t width;
+  uint16_t height;
+  uint16_t line_height;
+  uint16_t space_width;
+  uint16_t x;
+  uint16_t y;
+};
+
+typedef struct display display;
+
+static display *displays;
+
+//------------------------------------------------------------------------------
+// Read from display
+//------------------------------------------------------------------------------
+static int32_t display_read(IO_io *io, void *data, uint32_t length)
+{
+  return -IO_EOPNOTSUPP; // not supported
+}
+
+//------------------------------------------------------------------------------
+// Write to display
+//------------------------------------------------------------------------------
+static int32_t display_write(IO_io *io, const void *data, uint32_t length)
+{
+  display *dsp = &displays[io->channel];
+  const char *text = data;
+
+  int i;
+  for(i = 0; i < length; ++i) {
+    if(text[i] == '\n') {
+      dsp->y += dsp->line_height;
+      continue;
+    }
+    else if(text[i] == '\r') {
+      dsp->x = 0;
+      continue;
+    }
+
+    const IO_bitmap *bmp = IO_font_get_glyph(dsp->font, text[i]);
+    if(dsp->x + bmp->width > dsp->width) {
+      dsp->x = 0;
+      dsp->y += dsp->line_height;
+    }
+    if(dsp->y + bmp->height > dsp->height)
+      break;
+
+    IO_display_print_bitmap(io, dsp->x, dsp->y, bmp);
+    dsp->x += bmp->width;
+  }
+  return i;
+}
 
 //------------------------------------------------------------------------------
 // Initialize a display device
 //------------------------------------------------------------------------------
 int32_t IO_display_init(IO_io *io, uint8_t module)
 {
-  return IO_display_init_low(io, module);
+  //----------------------------------------------------------------------------
+  // First run
+  //----------------------------------------------------------------------------
+  if(!displays) {
+    int32_t num = IO_display_count_low();
+    if(num < 1)
+      return -IO_EINVAL;
+    displays = IO_malloc(num*sizeof(display));
+    memset(displays, 0, num*sizeof(display));
+  }
+
+  //----------------------------------------------------------------------------
+  // Initialize the display
+  //----------------------------------------------------------------------------
+  uint32_t ret = IO_display_init_low(io, module);
+  if(ret)
+    return ret;
+
+  IO_display_attrs attrs;
+  IO_display_get_attrs(io, &attrs);
+
+  display *dsp = &displays[module];
+  dsp->width = attrs.width;
+  dsp->height = attrs.height;
+
+  //----------------------------------------------------------------------------
+  // Set the font
+  //----------------------------------------------------------------------------
+  const IO_font *font = IO_font_get_by_name("DejaVuSans10");
+  if(!font)
+    return -IO_EIO;
+
+  IO_display_set_font(io, font);
+
+  //----------------------------------------------------------------------------
+  // Add read and write functions
+  //----------------------------------------------------------------------------
+  io->read  = display_read;
+  io->write = display_write;
+
+  return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -47,6 +148,10 @@ WEAK_ALIAS(__IO_display_init_low, IO_display_init_low);
 //------------------------------------------------------------------------------
 int32_t IO_display_get_attrs(IO_io *io, IO_display_attrs *attrs)
 {
+  if(io->type != IO_DISPLAY)
+    return -IO_EINVAL;
+  attrs->line_height = displays[io->channel].line_height;
+  attrs->space_width = displays[io->channel].space_width;
   return IO_display_get_attrs_low(io, attrs);
 }
 
@@ -65,10 +170,20 @@ WEAK_ALIAS(__IO_display_get_attrs_low, IO_display_get_attrs_low);
 //------------------------------------------------------------------------------
 int32_t __IO_display_clear(IO_io *io)
 {
+  displays[io->channel].x = 0;
+  displays[io->channel].y = 0;
+  return IO_display_clear_low(io);
+}
+
+//------------------------------------------------------------------------------
+// Clear the display
+//------------------------------------------------------------------------------
+int32_t __IO_display_clear_low(IO_io *io)
+{
   return -IO_ENOSYS;
 }
 
-WEAK_ALIAS(__IO_display_clear, IO_display_clear);
+WEAK_ALIAS(__IO_display_clear_low, IO_display_clear_low);
 
 //------------------------------------------------------------------------------
 // Put a pixel on the screen
@@ -95,3 +210,27 @@ int32_t __IO_display_print_bitmap(IO_io *io, uint16_t x, uint16_t y,
 }
 
 WEAK_ALIAS(__IO_display_print_bitmap, IO_display_print_bitmap);
+
+//------------------------------------------------------------------------------
+// Get number of display devices available
+//------------------------------------------------------------------------------
+int32_t __IO_display_count_low()
+{
+  return 0;
+}
+
+WEAK_ALIAS(__IO_display_count_low, IO_display_count_low);
+
+//------------------------------------------------------------------------------
+// Set font for the display
+//------------------------------------------------------------------------------
+int32_t IO_display_set_font(IO_io *io, const IO_font *font)
+{
+  if(io->type != IO_DISPLAY)
+    return -IO_EINVAL;
+
+  displays[io->channel].font = font;
+  displays[io->channel].line_height = font->size+1;
+  displays[io->channel].space_width = font->glyphs[0]->width;
+  return 0;
+}
