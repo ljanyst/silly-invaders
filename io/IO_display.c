@@ -234,3 +234,67 @@ int32_t IO_display_set_font(IO_io *io, const IO_font *font)
   displays[io->channel].space_width = font->glyphs[0]->width;
   return 0;
 }
+
+//------------------------------------------------------------------------------
+// Move the cursor to given coordinate
+//------------------------------------------------------------------------------
+int32_t IO_display_cursor_goto(IO_io *io, uint32_t x, uint32_t y)
+{
+  if(io->type != IO_DISPLAY)
+    return -IO_EINVAL;
+
+  display *dsp = &displays[io->channel];
+  dsp->x  = x;
+  dsp->y  = y;
+  dsp->x %= dsp->width;
+  dsp->y %= dsp->height;
+  return 0;
+}
+
+//------------------------------------------------------------------------------
+// Move the cursor to given line
+//------------------------------------------------------------------------------
+int32_t IO_display_cursor_goto_text(IO_io *io, uint32_t line, uint32_t space)
+{
+  if(io->type != IO_DISPLAY)
+    return -IO_EINVAL;
+
+  display *dsp = &displays[io->channel];
+  dsp->y  = line * dsp->line_height;
+  dsp->x  = space * dsp->space_width;
+  dsp->x %= dsp->width;
+  dsp->y %= dsp->height;
+  return 0;
+}
+
+//------------------------------------------------------------------------------
+// Move the cursor relative to the current location
+//------------------------------------------------------------------------------
+int32_t IO_display_cursor_move(IO_io *io, int32_t dx, int32_t dy)
+{
+  if(io->type != IO_DISPLAY)
+    return -IO_EINVAL;
+
+  display *dsp = &displays[io->channel];
+  dsp->x += dx;
+  dsp->y += dy;
+  dsp->x %= dsp->width;
+  dsp->y %= dsp->height;
+  return 0;
+}
+
+//------------------------------------------------------------------------------
+// Move the cursor relative to the current location by lines and spaces
+//------------------------------------------------------------------------------
+int32_t IO_display_cursor_move_text(IO_io *io, int32_t dline, int32_t dspace)
+{
+  if(io->type != IO_DISPLAY)
+    return -IO_EINVAL;
+
+  display *dsp = &displays[io->channel];
+  dsp->y += dline * dsp->line_height;
+  dsp->x += dspace * dsp->space_width;
+  dsp->x %= dsp->width;
+  dsp->y %= dsp->height;
+  return 0;
+}

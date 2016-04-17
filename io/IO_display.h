@@ -85,3 +85,40 @@ int32_t IO_display_print_bitmap(IO_io *io, uint16_t x, uint16_t y,
 //! Set font for the display
 //------------------------------------------------------------------------------
 int32_t IO_display_set_font(IO_io *io, const IO_font *font);
+
+//------------------------------------------------------------------------------
+//! Move the cursor to given coordinate
+//!
+//! @param io    the IO device
+//! @param x     move to x coordinate
+//! @param y     move to y coordinate
+//------------------------------------------------------------------------------
+int32_t IO_display_cursor_goto(IO_io *io, uint32_t x, uint32_t y);
+
+//------------------------------------------------------------------------------
+//! Move the cursor to given line
+//!
+//! @param io    the IO device
+//! @param x     move to line
+//! @param y     move to space (space width for the current font)
+//------------------------------------------------------------------------------
+int32_t IO_display_cursor_goto_text(IO_io *io, uint32_t line, uint32_t space);
+
+//------------------------------------------------------------------------------
+//! Move the cursor relative to the current location
+//!
+//! @param io    the IO device
+//! @param dx    move along the x axis
+//! @param dy    move along the y axis
+//------------------------------------------------------------------------------
+int32_t IO_display_cursor_move(IO_io *io, int32_t dx, int32_t dy);
+
+//------------------------------------------------------------------------------
+//! Move the cursor relative to the current location by lines and spaces
+//!
+//! @param io     the IO device
+//! @param dline  move along the y axis by line increments
+//! @param dspace move along the x axis by space (space width for the current
+//!               font) increments
+//------------------------------------------------------------------------------
+int32_t IO_display_cursor_move_text(IO_io *io, int32_t dline, int32_t dspace);
