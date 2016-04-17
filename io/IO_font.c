@@ -24,11 +24,9 @@
 // The fonts we autogenerate
 //------------------------------------------------------------------------------
 extern const IO_font DejaVuSans10;
-extern const IO_font RobotoRegular12;
 
 static const IO_font * const fonts[] = {
   &DejaVuSans10,
-  &RobotoRegular12,
   0
 };
 

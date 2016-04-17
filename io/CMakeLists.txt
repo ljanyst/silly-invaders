@@ -10,7 +10,6 @@ macro(add_font name size)
 endmacro()
 
 add_font(DejaVuSans 10)
-add_font(RobotoRegular 12)
 
 add_library(
   io STATIC
@@ -21,5 +20,4 @@ add_library(
   IO_display.c
   IO_malloc.c
   IO_font.c
-  fonts/DejaVuSans-10.c
-  fonts/RobotoRegular-12.c)
+  fonts/DejaVuSans-10.c)
