@@ -108,10 +108,10 @@ def generateGlyphs(font):
     glyphs.append(getPixelData(image))
 
   #-----------------------------------------------------------------------------
-  # Make space to be as wide as letter 'a'
+  # Make space to be as wide as letter 'l'
   #-----------------------------------------------------------------------------
-  a = glyphs[62]
-  space = (a[0], a[1], a[2], [1] * (a[0]*a[1]))
+  l = glyphs[73]
+  space = (l[0], l[1], l[2], [1] * (l[0]*l[1]))
   glyphs = [space] + glyphs
   return glyphs
 
