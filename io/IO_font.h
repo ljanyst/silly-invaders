@@ -20,7 +20,9 @@
 #pragma once
 
 #include "IO.h"
-#include "IO_display.h"
+
+struct IO_bitmap;
+typedef struct IO_bitmap IO_bitmap;
 
 //------------------------------------------------------------------------------
 //! Font description
