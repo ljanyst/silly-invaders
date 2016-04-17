@@ -74,7 +74,7 @@ int32_t IO_display_get_attrs_low(IO_io *io, IO_display_attrs *attrs)
 //------------------------------------------------------------------------------
 // Clear the display
 //------------------------------------------------------------------------------
-int32_t IO_display_clear(IO_io *io)
+int32_t IO_display_clear_low(IO_io *io)
 {
   if(io->type != IO_DISPLAY || io->channel != 0)
     return -IO_EINVAL;
@@ -91,4 +91,12 @@ int32_t IO_display_put_pixel(IO_io *io, uint16_t x, uint16_t y, uint32_t argb)
     return -IO_EINVAL;
 
   return PCD8544_put_pixel(&display0, x, y, argb);
+}
+
+//------------------------------------------------------------------------------
+// Get number of display devices available
+//------------------------------------------------------------------------------
+int32_t IO_display_count_low()
+{
+  return 1;
 }
