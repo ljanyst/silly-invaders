@@ -47,9 +47,9 @@ typedef struct IO_ssi_attrs IO_ssi_attrs;
 //! Open SSI device and create the associated input and output structures
 //!
 //! @param io     the io structure to be initialized
-//! @param module UART module number to be configured
+//! @param module SSI module number to be configured
 //! @param flags  flags
-//! @param clock  clock speed
+//! @param attrs  SSI attributes
 //------------------------------------------------------------------------------
 int32_t IO_ssi_init(IO_io *io, uint8_t module, uint16_t flags,
   IO_ssi_attrs *attrs);
