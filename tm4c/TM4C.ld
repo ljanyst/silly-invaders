@@ -34,7 +34,7 @@ SECTIONS
   .ARM.exidx :
   {
     *(.ARM.exidx*)
-    *(.gnu.linkonce.armexidx.*)
+    *(.gnu.linkonce.armexidx*)
   } > FLASH
 
   .data :
