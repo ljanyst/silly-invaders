@@ -64,18 +64,6 @@ int32_t IO_display_clear(IO_io *io);
 int32_t IO_display_put_pixel(IO_io *io, uint16_t x, uint16_t y, uint32_t argb);
 
 //------------------------------------------------------------------------------
-//! Bitmap
-//------------------------------------------------------------------------------
-struct IO_bitmap {
-  uint16_t  width;   //!< width
-  uint16_t  height;  //!< height
-  uint8_t   bpp;     //!< bits per pixel
-  void     *data;    //!< flattened data
-};
-
-typedef struct IO_bitmap IO_bitmap;
-
-//------------------------------------------------------------------------------
 //! Print bitmap
 //------------------------------------------------------------------------------
 int32_t IO_display_print_bitmap(IO_io *io, uint16_t x, uint16_t y,

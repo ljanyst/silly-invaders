@@ -139,3 +139,15 @@ void IO_wait_for_interrupt();
 //! Sync - make sure that all the buffered data has been transmitted
 //------------------------------------------------------------------------------
 uint32_t IO_sync(IO_io *io);
+
+//------------------------------------------------------------------------------
+//! Bitmap
+//------------------------------------------------------------------------------
+struct IO_bitmap {
+  uint16_t  width;   //!< width
+  uint16_t  height;  //!< height
+  uint8_t   bpp;     //!< bits per pixel
+  void     *data;    //!< flattened data
+};
+
+typedef struct IO_bitmap IO_bitmap;
