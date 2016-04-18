@@ -126,14 +126,14 @@ def writeHeader(f):
 #-------------------------------------------------------------------------------
 # Write glyphs
 #-------------------------------------------------------------------------------
-def writeGlyphs(f, glyphs):
+def writeGlyphs(f, name, glyphs):
   for i in range(len(glyphs)):
     glyph = glyphs[i]
-    f.write("static const char glyph_" + str(i) + "_data[] = ");
+    f.write("static const char " + name + "_glyph_" + str(i) + "_data[] = ");
     f.write("{" + str(glyph[3])[1:-1] + "};\n");
-    f.write("static const IO_bitmap glyph_" + str(i) + " = {");
+    f.write("static const IO_bitmap " + name + "_glyph_" + str(i) + " = {");
     f.write(str(glyph[0]) + ", " + str(glyph[1]) + ", " + str(glyph[2]) + ", ")
-    f.write("(void*)glyph_" + str(i) + "_data};\n")
+    f.write("(void*)" + name + "_glyph_" + str(i) + "_data};\n")
 
   f.write("\n")
 
@@ -148,7 +148,7 @@ def writeFontStruct(f, name, glyphs):
   f.write("const IO_font " + name + " = { \"" + name + "\", " + str(size))
   f.write(", {\n")
   for i in range(len(glyphs)):
-    f.write("  (IO_bitmap*)&glyph_" + str(i) + ",\n");
+    f.write("  (IO_bitmap*)&" + name + "_glyph_" + str(i) + ",\n");
   f.write("}};\n")
 
 #-------------------------------------------------------------------------------
@@ -199,7 +199,7 @@ def main():
   try:
     fo = open(sys.argv[4], "w")
     writeHeader(fo)
-    writeGlyphs(fo, glyphs)
+    writeGlyphs(fo, name, glyphs)
     writeFontStruct(fo, name, glyphs)
     fo.close()
   except IOError, e:
