@@ -31,6 +31,12 @@ SECTIONS
      __text_end_vma = .;
   } > FLASH
 
+  .ARM.exidx :
+  {
+    *(.ARM.exidx*)
+    *(.gnu.linkonce.armexidx.*)
+  } > FLASH
+
   .data :
   {
     __data_start_vma = .;
