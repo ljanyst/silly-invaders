@@ -1,5 +1,5 @@
 
-set(TM4C_LIB -Wl,--whole-archive tm4c -Wl,--no-whole-archive)
+set(TM4C_LIB -Wl,--whole-archive tm4c_platform_01 tm4c pcd8544 -Wl,--no-whole-archive)
 
 macro(add_test name)
   add_executable(${name}.axf ${name}.c)
@@ -7,9 +7,9 @@ macro(add_test name)
   target_link_libraries(${name}.axf ${TM4C_LIB} io ${TIVAWARE_LIB})
 endmacro()
 
-set(tests startup;uart;uart-async;uart-dma;ssi-dma;gpio)
+set(tests startup;uart;uart-async;uart-dma;ssi-dma;gpio;display)
 
-foreach(i RANGE 5)
+foreach(i RANGE 6)
   list(GET tests ${i} name)
   if(i LESS 10)
     add_test(test-0${i}-${name})
