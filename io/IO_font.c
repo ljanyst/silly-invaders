@@ -56,3 +56,21 @@ const IO_bitmap *IO_font_get_glyph(const IO_font *font, char ch)
   if(ch < 127) return font->glyphs[ch-34];
   return font->glyphs[3];
 }
+
+//------------------------------------------------------------------------------
+// Get dimensions of the box containing given text
+//------------------------------------------------------------------------------
+void IO_font_get_box(const IO_font *font, const char *text, uint16_t *width,
+  uint16_t *height)
+{
+  *width = 0;
+  *height = font->size;
+  while(*text) {
+    if(*text == '\r' || *text == '\n') {
+      ++text;
+      continue;
+    }
+    *width += IO_font_get_glyph(font, *text)->width;
+    ++text;
+  }
+}
