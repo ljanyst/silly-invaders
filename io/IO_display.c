@@ -168,7 +168,7 @@ WEAK_ALIAS(__IO_display_get_attrs_low, IO_display_get_attrs_low);
 //------------------------------------------------------------------------------
 // Clear the display
 //------------------------------------------------------------------------------
-int32_t __IO_display_clear(IO_io *io)
+int32_t IO_display_clear(IO_io *io)
 {
   displays[io->channel].x = 0;
   displays[io->channel].y = 0;
