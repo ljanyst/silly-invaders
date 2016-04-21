@@ -27,12 +27,14 @@ IO_io button[2];
 void button_event(IO_io *io, uint16_t event)
 {
   int btn = 0;
+  uint32_t state;
   if(io == &button[1]) btn = 1;
 
-  if(!IO_gpio_get_state(&button[btn]))
-    IO_gpio_set_state(&led[btn], 1);
+  IO_get(&button[btn], &state);
+  if(!state)
+    IO_set(&led[btn], 1);
   else
-    IO_gpio_set_state(&led[btn], 0);
+    IO_set(&led[btn], 0);
 }
 
 //------------------------------------------------------------------------------
