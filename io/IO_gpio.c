@@ -30,22 +30,3 @@ int32_t __IO_gpio_init(IO_io *io, uint8_t pin, uint16_t flags, uint8_t dir)
 }
 
 WEAK_ALIAS(__IO_gpio_init, IO_gpio_init);
-
-//------------------------------------------------------------------------------
-// Get state of the pin
-//------------------------------------------------------------------------------
-int32_t __IO_gpio_get_state(IO_io *io)
-{
-  return -IO_ENOSYS;
-}
-
-WEAK_ALIAS(__IO_gpio_get_state, IO_gpio_get_state);
-
-//------------------------------------------------------------------------------
-// Set state of the pin
-//------------------------------------------------------------------------------
-void __IO_gpio_set_state(IO_io *io, uint8_t state)
-{
-}
-
-WEAK_ALIAS(__IO_gpio_set_state, IO_gpio_set_state);
