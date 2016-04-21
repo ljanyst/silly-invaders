@@ -114,9 +114,9 @@ static int32_t gpio_write(IO_io *io, const void *data, uint32_t length)
   //----------------------------------------------------------------------------
   // Extract the value
   //----------------------------------------------------------------------------
-  if(length == 0)
+  if(length != 1)
     return -IO_EINVAL;
-  const uint8_t *val = data;
+  const uint32_t *val = data;
 
   //----------------------------------------------------------------------------
   // Compute the address and set the state
@@ -140,9 +140,9 @@ static int32_t gpio_read(IO_io *io, void *data, uint32_t length)
   //----------------------------------------------------------------------------
   // Extract the value
   //----------------------------------------------------------------------------
-  if(length == 0)
+  if(length != 1)
     return -IO_EINVAL;
-  uint8_t *val = data;
+  uint32_t *val = data;
 
   //----------------------------------------------------------------------------
   // Compute the address and get the state
@@ -207,24 +207,6 @@ int32_t IO_gpio_init(IO_io *io, uint8_t pin, uint16_t flags, uint8_t dir)
   io->sync    = gpio_sync;
   gpio_devices[pin] = io;
   return 0;
-}
-
-//------------------------------------------------------------------------------
-// Get state of the pin
-//------------------------------------------------------------------------------
-int32_t IO_gpio_get_state(IO_io *io)
-{
-  uint8_t state = 0;
-  IO_read(io, &state, 1);
-  return state;
-}
-
-//------------------------------------------------------------------------------
-// Set state of the pin
-//------------------------------------------------------------------------------
-void IO_gpio_set_state(IO_io *io, uint8_t state)
-{
-  IO_write(io, &state, 1);
 }
 
 //------------------------------------------------------------------------------
