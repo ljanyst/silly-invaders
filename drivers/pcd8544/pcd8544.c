@@ -68,18 +68,18 @@ int32_t PCD8544_init(pcd8544 *device, uint8_t ssi_module, uint8_t dc_pin,
   //----------------------------------------------------------------------------
   // Reset the device
   //----------------------------------------------------------------------------
-  IO_gpio_set_state(&device->reset, 0);
+  IO_set(&device->reset, 0);
   for(volatile int i = 0; i < 10; ++i);
-  IO_gpio_set_state(&device->reset, 1);
+  IO_set(&device->reset, 1);
 
   //----------------------------------------------------------------------------
   // Initialize and set cursor to (0, 0)
   //----------------------------------------------------------------------------
-  IO_gpio_set_state(&device->dc, 0);
+  IO_set(&device->dc, 0);
   IO_write(&device->ssi, init_seq, sizeof(init_seq));
   IO_write(&device->ssi, cursor_rst_seq, sizeof(cursor_rst_seq));
   IO_sync(&device->ssi);
-  IO_gpio_set_state(&device->dc, 1);
+  IO_set(&device->dc, 1);
 
   return 0;
 }
@@ -137,13 +137,13 @@ int32_t PCD8544_put_pixel(pcd8544 *device, uint16_t x, uint16_t y,
 //------------------------------------------------------------------------------
 int32_t PCD8544_sync(pcd8544 *device)
 {
-  IO_gpio_set_state(&device->dc, 0);
+  IO_set(&device->dc, 0);
   IO_write(&device->ssi, cursor_rst_seq, sizeof(cursor_rst_seq));
   IO_sync(&device->ssi);
-  IO_gpio_set_state(&device->dc, 1);
+  IO_set(&device->dc, 1);
   for(int i = 0; i < 6; ++i)
     IO_write(&device->ssi, device->pixels[i], 84);
   IO_sync(&device->ssi);
-  IO_gpio_set_state(&device->dc, 0);
+  IO_set(&device->dc, 0);
   return 0;
 }
