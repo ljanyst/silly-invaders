@@ -116,7 +116,7 @@ static int32_t gpio_write(IO_io *io, const void *data, uint32_t length)
   //----------------------------------------------------------------------------
   if(length != 1)
     return -IO_EINVAL;
-  const uint32_t *val = data;
+  const uint64_t *val = data;
 
   //----------------------------------------------------------------------------
   // Compute the address and set the state
@@ -142,7 +142,7 @@ static int32_t gpio_read(IO_io *io, void *data, uint32_t length)
   //----------------------------------------------------------------------------
   if(length != 1)
     return -IO_EINVAL;
-  uint32_t *val = data;
+  uint64_t *val = data;
 
   //----------------------------------------------------------------------------
   // Compute the address and get the state
