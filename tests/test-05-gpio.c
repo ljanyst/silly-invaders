@@ -42,6 +42,7 @@ void button_event(IO_io *io, uint16_t event)
 //------------------------------------------------------------------------------
 int main()
 {
+  IO_init();
   IO_gpio_init(&led[0], 41, 0, 1);
   IO_gpio_init(&led[1], 42, 0, 1);
   IO_gpio_init(&button[0], 40, IO_ASYNC, 0);
