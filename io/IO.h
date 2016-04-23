@@ -40,6 +40,7 @@ int32_t IO_init();
 #define IO_SSI     2
 #define IO_GPIO    3
 #define IO_DISPLAY 4
+#define IO_TIMER   5
 
 //------------------------------------------------------------------------------
 // IO events
@@ -49,6 +50,7 @@ int32_t IO_init();
 #define IO_EVENT_DMA_READ  0x0004
 #define IO_EVENT_DMA_WRITE 0x0008
 #define IO_EVENT_CHANGE    0x0010
+#define IO_EVENT_TICK      0x0010
 
 //------------------------------------------------------------------------------
 //! IO definition
