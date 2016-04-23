@@ -43,10 +43,12 @@
 #define RCC_REG              (*(volatile unsigned long *)0x400fe060)
 #define GPIOHBCTL_REG        (*(volatile unsigned long *)0x400fe06c)
 #define RCC2_REG             (*(volatile unsigned long *)0x400fe070)
+#define RCGCTIMER_REG        (*(volatile unsigned long *)0x400fe604)
 #define RCGCGPIO_REG         (*(volatile unsigned long *)0x400fe608)
 #define RCGCDMA_REG          (*(volatile unsigned long *)0x400fe60c)
 #define RCGCUART_REG         (*(volatile unsigned long *)0x400fe618)
 #define RCGCSSI_REG          (*(volatile unsigned long *)0x400fe61c)
+#define RCGCWTIMER_REG       (*(volatile unsigned long *)0x400fe65c)
 
 //------------------------------------------------------------------------------
 // DMA
@@ -159,6 +161,22 @@
 #define SSI_MODULE_OFFSET 0x1000
 
 #define SSI_REG(MODULE, REG) (*(volatile unsigned long*)(SSI_REG_BASE + MODULE + REG))
+
+//------------------------------------------------------------------------------
+// Timers
+//------------------------------------------------------------------------------
+#define GPTM_CFG           0x0000
+#define GPTM_TAMR          0x0004
+#define GPTM_CTL           0x000c
+#define GPTM_IMR           0x0018
+#define GPTM_ICR           0x0024
+#define GPTM_TAILR         0x0028
+#define GPTM_TBILR         0x002c
+
+#define GPTM_MODULE_OFFSET 0x1000
+
+#define GPTM_REG_BASE(MODULE) (MODULE < 8 ? 0x40030000 : 0x40044000)
+#define GPTM_REG(MODULE, REG) (*(volatile unsigned long*)(GPTM_REG_BASE(MODULE) + MODULE + REG))
 
 //------------------------------------------------------------------------------
 //! Initialize the board
