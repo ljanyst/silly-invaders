@@ -601,7 +601,7 @@ uint32_t IO_sync(IO_io *io)
 //------------------------------------------------------------------------------
 // Write a double word to a device
 //------------------------------------------------------------------------------
-int32_t IO_set(IO_io *io, uint32_t data)
+int32_t IO_set(IO_io *io, uint64_t data)
 {
   if(io->type != IO_GPIO)
     return -IO_EINVAL;
@@ -611,7 +611,7 @@ int32_t IO_set(IO_io *io, uint32_t data)
 //------------------------------------------------------------------------------
 // Get a double word from a device
 //------------------------------------------------------------------------------
-int32_t IO_get(IO_io *io, uint32_t *data)
+int32_t IO_get(IO_io *io, uint64_t *data)
 {
   if(io->type != IO_GPIO)
     return -IO_EINVAL;

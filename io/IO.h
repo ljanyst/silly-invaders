@@ -155,9 +155,9 @@ typedef struct IO_bitmap IO_bitmap;
 //------------------------------------------------------------------------------
 //! Write a double word to a device
 //------------------------------------------------------------------------------
-int32_t IO_set(IO_io *io, uint32_t data);
+int32_t IO_set(IO_io *io, uint64_t data);
 
 //------------------------------------------------------------------------------
 //! Get a double word from a device
 //------------------------------------------------------------------------------
-int32_t IO_get(IO_io *io, uint32_t *data);
+int32_t IO_get(IO_io *io, uint64_t *data);
