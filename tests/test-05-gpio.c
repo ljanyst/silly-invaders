@@ -27,7 +27,7 @@ IO_io button[2];
 void button_event(IO_io *io, uint16_t event)
 {
   int btn = 0;
-  uint32_t state;
+  uint64_t state;
   if(io == &button[1]) btn = 1;
 
   IO_get(&button[btn], &state);
