@@ -48,6 +48,7 @@
 #define RCGCDMA_REG          (*(volatile unsigned long *)0x400fe60c)
 #define RCGCUART_REG         (*(volatile unsigned long *)0x400fe618)
 #define RCGCSSI_REG          (*(volatile unsigned long *)0x400fe61c)
+#define RCGCADC_REG          (*(volatile unsigned long *)0x400fe638)
 #define RCGCWTIMER_REG       (*(volatile unsigned long *)0x400fe65c)
 
 //------------------------------------------------------------------------------
@@ -177,6 +178,31 @@
 
 #define GPTM_REG_BASE(MODULE) (MODULE < 8 ? 0x40030000 : 0x40044000)
 #define GPTM_REG(MODULE, REG) (*(volatile unsigned long*)(GPTM_REG_BASE(MODULE) + MODULE + REG))
+
+//------------------------------------------------------------------------------
+// ADC
+//------------------------------------------------------------------------------
+#define ADC_REG_BASE      0x40038000
+#define ADC_ACTSS         0x0000
+#define ADC_RIS           0x0004
+#define ADC_IM            0x0008
+#define ADC_ISC           0x000c
+#define ADC_PSSI          0x0028
+#define ADC_SSMUX0        0x0040
+#define ADC_SSCTL0        0x0044
+#define ADC_SSFIFO0       0x0048
+#define ADC_SSMUX1        0x0060
+#define ADC_SSCTL1        0x0064
+#define ADC_SSFIFO1       0x0068
+#define ADC_SSMUX2        0x0080
+#define ADC_SSCTL2        0x0084
+#define ADC_SSFIFO2       0x0088
+#define ADC_SSMUX3        0x00a0
+#define ADC_SSCTL3        0x00a4
+#define ADC_SSFIFO3       0x00a8
+#define ADC_MODULE_OFFSET 0x1000
+
+#define ADC_REG(MODULE, REG) (*(volatile unsigned long*)(ADC_REG_BASE + MODULE + REG))
 
 //------------------------------------------------------------------------------
 //! Initialize the board

@@ -26,6 +26,7 @@
 #include "TM4C_uart.h"
 #include "TM4C_ssi.h"
 #include "TM4C_gpio.h"
+#include "TM4C_adc.h"
 #include "TM4C_dma.h"
 
 extern unsigned long __bss_end_vma;
@@ -131,6 +132,8 @@ int32_t IO_event_enable(IO_io *io, uint16_t events)
       return TM4C_ssi_event_enable(io, events);
     case IO_GPIO:
       return TM4C_gpio_event_enable(io, events);
+    case IO_ADC:
+      return TM4C_adc_event_enable(io, events);
   }
   return -IO_ENOSYS;
 }
@@ -147,6 +150,8 @@ int32_t IO_event_disable(IO_io *io, uint16_t events)
       return TM4C_ssi_event_disable(io, events);
     case IO_GPIO:
       return TM4C_gpio_event_disable(io, events);
+    case IO_ADC:
+      return TM4C_adc_event_disable(io, events);
   }
   return -IO_ENOSYS;
 }
