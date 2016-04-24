@@ -45,7 +45,7 @@ void TM4C_gpio_pin_init(uint8_t port, uint8_t pin, uint8_t afsel, uint8_t amsel,
 {
   uint16_t port_offset = port * GPIO_PORT_OFFSET;
 
-  // enable alternative function of the pin
+  // enable alternative digital function of the pin
   if(afsel) {
     GPIO_REG(port_offset, GPIO_AFSEL) |= (1 << pin);
 
@@ -56,8 +56,10 @@ void TM4C_gpio_pin_init(uint8_t port, uint8_t pin, uint8_t afsel, uint8_t amsel,
     GPIO_REG(port_offset, GPIO_AFSEL) &= ~(1 << pin);
 
   // enable the analog function of the pin
-  if(amsel)
-    GPIO_REG(port_offset, GPIO_AMSEL) &= ~(1 << pin);
+  if(amsel) {
+    GPIO_REG(port_offset, GPIO_AFSEL) |= (1 << pin);
+    GPIO_REG(port_offset, GPIO_AMSEL) |= (1 << pin);
+  }
   else
     GPIO_REG(port_offset, GPIO_AMSEL) &= ~(1 << pin);
 
