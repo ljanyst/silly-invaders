@@ -24,5 +24,6 @@ add_library(
   IO_button.c
   IO_timer.c
   IO_led.c
+  IO_adc.c
   fonts/DejaVuSans-10.c
   fonts/DejaVuSerif-10.c)

@@ -603,7 +603,7 @@ uint32_t IO_sync(IO_io *io)
 //------------------------------------------------------------------------------
 int32_t IO_set(IO_io *io, uint64_t data)
 {
-  if(io->type != IO_GPIO && io->type != IO_TIMER)
+  if(io->type != IO_GPIO && io->type != IO_TIMER && io->type != IO_ADC)
     return -IO_EINVAL;
   return IO_write(io, &data, 1);
 }
@@ -613,7 +613,7 @@ int32_t IO_set(IO_io *io, uint64_t data)
 //------------------------------------------------------------------------------
 int32_t IO_get(IO_io *io, uint64_t *data)
 {
-  if(io->type != IO_GPIO && io->type != IO_TIMER)
+  if(io->type != IO_GPIO && io->type != IO_TIMER && io->type != IO_ADC)
     return -IO_EINVAL;
   return IO_read(io, data, 1);
 }
