@@ -91,3 +91,13 @@ int32_t __IO_adc_init(IO_io *io, uint8_t module, uint16_t flags)
 }
 
 WEAK_ALIAS(__IO_adc_init, IO_adc_init);
+
+//------------------------------------------------------------------------------
+// Initialize a slider
+//------------------------------------------------------------------------------
+int32_t __IO_slider_init(IO_io *io, uint8_t module, uint16_t flags)
+{
+  return -IO_ENOSYS;
+}
+
+WEAK_ALIAS(__IO_slider_init, IO_slider_init);

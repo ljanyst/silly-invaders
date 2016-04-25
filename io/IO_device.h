@@ -107,3 +107,12 @@ int32_t IO_button_init(IO_io *io, uint8_t module, uint16_t flags);
 //! @param flags  flags
 //------------------------------------------------------------------------------
 int32_t IO_adc_init(IO_io *io, uint8_t module, uint16_t flags);
+
+//------------------------------------------------------------------------------
+//! Initialize a slider
+//!
+//! @param io     the io structure to be initialized
+//! @param module number of the ADC device to be configured
+//! @param flags  flags
+//------------------------------------------------------------------------------
+int32_t IO_slider_init(IO_io *io, uint8_t module, uint16_t flags);
