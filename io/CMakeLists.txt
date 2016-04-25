@@ -15,15 +15,9 @@ add_font(DejaVuSerif 10)
 add_library(
   io STATIC
   IO.c
-  IO_uart.c
-  IO_ssi.c
-  IO_gpio.c
+  IO_device.c
   IO_display.c
   IO_malloc.c
   IO_font.c
-  IO_button.c
-  IO_timer.c
-  IO_led.c
-  IO_adc.c
   fonts/DejaVuSans-10.c
   fonts/DejaVuSerif-10.c)
