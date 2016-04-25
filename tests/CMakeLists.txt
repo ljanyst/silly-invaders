@@ -7,9 +7,9 @@ macro(add_test name)
   target_link_libraries(${name}.axf ${TM4C_LIB} io ${TIVAWARE_LIB})
 endmacro()
 
-set(tests startup;uart;uart-async;uart-dma;ssi-dma;gpio;display;timer)
+set(tests startup;uart;uart-async;uart-dma;ssi-dma;gpio;display;timer;input)
 
-foreach(i RANGE 7)
+foreach(i RANGE 8)
   list(GET tests ${i} name)
   if(i LESS 10)
     add_test(test-0${i}-${name})
