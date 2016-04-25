@@ -17,7 +17,7 @@
 // along with silly-invaders.  If not, see <http://www.gnu.org/licenses/>.
 //------------------------------------------------------------------------------
 
-#include <io/IO_uart.h>
+#include <io/IO_device.h>
 #include <io/IO_error.h>
 #include "TM4C.h"
 #include "TM4C_dma.h"
