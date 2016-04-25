@@ -20,7 +20,18 @@
 #pragma once
 
 #include <io/IO.h>
-#include <stdint.h>
+
+//------------------------------------------------------------------------------
+// Enable/disable UART events
+//------------------------------------------------------------------------------
+int32_t TM4C_uart_event_enable(IO_io *io, uint16_t events);
+int32_t TM4C_uart_event_disable(IO_io *io, uint16_t events);
+
+//------------------------------------------------------------------------------
+// Enable/disable SSI events
+//------------------------------------------------------------------------------
+int32_t TM4C_ssi_event_enable(IO_io *io, uint16_t events);
+int32_t TM4C_ssi_event_disable(IO_io *io, uint16_t events);
 
 //------------------------------------------------------------------------------
 // Enable/disable ADC events

@@ -23,10 +23,8 @@
 #include <io/IO_error.h>
 #include <io/IO_malloc_low.h>
 #include "TM4C.h"
-#include "TM4C_uart.h"
-#include "TM4C_ssi.h"
+#include "TM4C_events.h"
 #include "TM4C_gpio.h"
-#include "TM4C_adc.h"
 #include "TM4C_dma.h"
 
 extern unsigned long __bss_end_vma;
