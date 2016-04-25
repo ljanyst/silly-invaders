@@ -18,8 +18,7 @@
 //------------------------------------------------------------------------------
 
 #include <io/IO.h>
-#include <io/IO_gpio.h>
-#include <io/IO_timer.h>
+#include <io/IO_device.h>
 
 IO_io led[2];
 IO_io timer;

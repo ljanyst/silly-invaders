@@ -18,7 +18,7 @@
 //------------------------------------------------------------------------------
 
 #include <io/IO.h>
-#include <io/IO_uart.h>
+#include <io/IO_device.h>
 
 char buffer[30];
 

@@ -18,7 +18,7 @@
 //------------------------------------------------------------------------------
 
 #include <io/IO.h>
-#include <io/IO_gpio.h>
+#include <io/IO_device.h>
 
 #define PULLUP_REG (*(volatile unsigned long *)0x4005d510)
 IO_io led[2];

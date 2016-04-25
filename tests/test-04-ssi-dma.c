@@ -19,8 +19,7 @@
 
 #include <io/IO.h>
 #include <io/IO_error.h>
-#include <io/IO_uart.h>
-#include <io/IO_ssi.h>
+#include <io/IO_device.h>
 #include <string.h>
 
 #define RECEIVER
