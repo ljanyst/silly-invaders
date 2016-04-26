@@ -101,3 +101,13 @@ int32_t __IO_slider_init(IO_io *io, uint8_t module, uint16_t flags)
 }
 
 WEAK_ALIAS(__IO_slider_init, IO_slider_init);
+
+//------------------------------------------------------------------------------
+// Initialize a DAC
+//------------------------------------------------------------------------------
+int32_t __IO_dac_init(IO_io *io, uint8_t module)
+{
+  return -IO_ENOSYS;
+}
+
+WEAK_ALIAS(__IO_dac_init, IO_dac_init);

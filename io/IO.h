@@ -42,6 +42,7 @@ int32_t IO_init();
 #define IO_DISPLAY 4
 #define IO_TIMER   5
 #define IO_ADC     6
+#define IO_DAC     7
 
 //------------------------------------------------------------------------------
 // IO events
