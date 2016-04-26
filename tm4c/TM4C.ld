@@ -28,13 +28,13 @@ SECTIONS
     KEEP(*(.nvic))
     *(.text*)
     *(.rodata*)
-     __text_end_vma = .;
   } > FLASH
 
   .ARM.exidx :
   {
     *(.ARM.exidx*)
     *(.gnu.linkonce.armexidx*)
+    __text_end_vma = .;
   } > FLASH
 
   .data :
