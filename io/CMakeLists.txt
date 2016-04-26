@@ -19,5 +19,6 @@ add_library(
   IO_display.c
   IO_malloc.c
   IO_font.c
+  IO_sound.c
   fonts/DejaVuSans-10.c
   fonts/DejaVuSerif-10.c)
