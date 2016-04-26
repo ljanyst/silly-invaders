@@ -322,11 +322,8 @@ int32_t IO_uart_init(IO_io *io, uint8_t module, uint16_t flags, uint32_t baud)
   //----------------------------------------------------------------------------
   // Enable the interrupt if needed
   //----------------------------------------------------------------------------
-  if(flags & IO_ASYNC) {
-    uint8_t nvic_bit = uart_info[module].interrupt_num % 32;
-    uint8_t nvic_reg = uart_info[module].interrupt_num / 32;
-    NVIC_EN_REG(nvic_reg) |= (1 << nvic_bit);
-  }
+  if(flags & IO_ASYNC)
+    TM4C_enable_interrupt(uart_info[module].interrupt_num, 7);
 
   return 0;
 }

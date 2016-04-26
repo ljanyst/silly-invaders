@@ -33,6 +33,7 @@
 #define NVIC_EN3_REG         (*(volatile unsigned long *)0xe000e10c)
 #define NVIC_EN4_REG         (*(volatile unsigned long *)0xe000e110)
 #define NVIC_EN_REG(NUM)     (*(volatile unsigned long *)(0xe000e100+4*NUM))
+#define NVIC_PRI_REG(NUM)    (*(volatile unsigned long *)(0xe000e400+4*NUM))
 #define SYSPRI3_REG          (*(volatile unsigned long *)0xe000ed20)
 #define CPAC_REG             (*(volatile unsigned long *)0xe000ed88)
 #define MPUCTRL_REG          (*(volatile unsigned long *)0xe000ed94)
@@ -217,3 +218,8 @@
 //! Initialize the board
 //------------------------------------------------------------------------------
 int32_t TM4C_init();
+
+//------------------------------------------------------------------------------
+//! Enable an interrupt
+//------------------------------------------------------------------------------
+void TM4C_enable_interrupt(uint8_t number, uint8_t priority);

@@ -184,9 +184,7 @@ int32_t IO_timer_init(IO_io *io, uint8_t module)
 
   // time-out interrupt
   GPTM_REG(module_offset, GPTM_IMR) = 0x01;
-  uint8_t nvic_bit = timer_interrupt[module] % 32;
-  uint8_t nvic_reg = timer_interrupt[module] / 32;
-  NVIC_EN_REG(nvic_reg) |= (1 << nvic_bit);
+  TM4C_enable_interrupt(timer_interrupt[module], 7);
 
   //----------------------------------------------------------------------------
   // Set up the software

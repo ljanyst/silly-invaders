@@ -170,11 +170,8 @@ int32_t IO_adc_init(IO_io *io, uint8_t module, uint16_t flags)
   // make it the only pin in the sequence and assert the interrupt when done
   ADC_REG(module_offset, adc_ctl) = 0x06;
 
-  if(flags & IO_ASYNC) {
-    uint8_t nvic_bit = adc_info[module].interrupt % 32;
-    uint8_t nvic_reg = adc_info[module].interrupt / 32;
-    NVIC_EN_REG(nvic_reg) |= (1 << nvic_bit);
-  }
+  if(flags & IO_ASYNC)
+    TM4C_enable_interrupt(adc_info[module].interrupt, 7);
 
   // turn on the sequencer
   ADC_REG(module_offset, ADC_ACTSS) |= (1 << adc_sequencer);

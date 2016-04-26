@@ -177,3 +177,18 @@ void IO_wait_for_interrupt()
 {
   __asm__ volatile("wfi");
 }
+
+//------------------------------------------------------------------------------
+// Enable an interrupt
+//------------------------------------------------------------------------------
+void TM4C_enable_interrupt(uint8_t number, uint8_t priority)
+{
+   uint8_t en_bit   = number % 32;
+   uint8_t en_reg   = number / 32;
+   uint8_t pri_bits = (number % 4) * 8 + 5;
+   uint8_t pri_reg  = number / 4;
+
+   NVIC_EN_REG(en_reg) |= (1 << en_bit);
+   NVIC_PRI_REG(pri_reg) &= ~(0x07 << pri_bits);
+   NVIC_PRI_REG(pri_reg) |= ((priority & 0x07) << pri_bits);
+}
