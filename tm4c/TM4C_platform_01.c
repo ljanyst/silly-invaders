@@ -26,6 +26,7 @@
 #include <io/IO_display_low.h>
 
 #include "TM4C.h"
+#include "TM4C_gpio.h"
 
 #include <drivers/pcd8544/pcd8544.h>
 
@@ -146,4 +147,60 @@ int32_t IO_display_put_pixel(IO_io *io, uint16_t x, uint16_t y, uint32_t argb)
 int32_t IO_display_count_low()
 {
   return 1;
+}
+
+//------------------------------------------------------------------------------
+// DAC
+//------------------------------------------------------------------------------
+static uint32_t *dac_data;
+
+//------------------------------------------------------------------------------
+// Set DAC state
+//------------------------------------------------------------------------------
+static int32_t dac_write(IO_io *io, const void *data, uint32_t length)
+{
+  //----------------------------------------------------------------------------
+  // Extract the value
+  //----------------------------------------------------------------------------
+  if(length != 1)
+    return -IO_EINVAL;
+
+  const uint64_t *val = data;
+
+  *dac_data = *val;
+
+  return 1;
+}
+
+
+//------------------------------------------------------------------------------
+// Initialize a DAC
+//------------------------------------------------------------------------------
+int32_t IO_dac_init(IO_io *io, uint8_t module)
+{
+  if(module > 0)
+    return -IO_EINVAL;
+
+  TM4C_gpio_port_init(GPIO_PORTD_NUM);
+  TM4C_gpio_pin_init(GPIO_PORTD_NUM, GPIO_PIN0_NUM, 0, 0, 1);
+  TM4C_gpio_pin_init(GPIO_PORTD_NUM, GPIO_PIN1_NUM, 0, 0, 1);
+  TM4C_gpio_pin_init(GPIO_PORTD_NUM, GPIO_PIN2_NUM, 0, 0, 1);
+  TM4C_gpio_pin_init(GPIO_PORTD_NUM, GPIO_PIN3_NUM, 0, 0, 1);
+
+  uint32_t addr =  GPIO_REG_BASE + GPIO_PORTD;
+  addr += GPIO_PIN0_BIT_OFFSET;
+  addr += GPIO_PIN1_BIT_OFFSET;
+  addr += GPIO_PIN2_BIT_OFFSET;
+  addr += GPIO_PIN3_BIT_OFFSET;
+  dac_data = (uint32_t*)addr;
+
+  io->type    = IO_DAC;
+  io->sync    = 0;
+  io->channel = 0;
+  io->flags   = 0;
+  io->read    = 0;
+  io->write   = dac_write;
+  io->event   = 0;
+
+  return 0;
 }
