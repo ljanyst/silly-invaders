@@ -24,6 +24,8 @@
 #include <io/IO_error.h>
 #include <io/IO_display.h>
 #include <io/IO_display_low.h>
+#include <io/IO_sound.h>
+#include <io/IO_sound_low.h>
 
 #include "TM4C.h"
 #include "TM4C_gpio.h"
@@ -291,4 +293,12 @@ int32_t IO_sound_init(IO_io *io, uint8_t module)
   io->event   = 0;
 
   return 0;
+}
+
+//------------------------------------------------------------------------------
+// Get number of sound devices available
+//------------------------------------------------------------------------------
+int32_t IO_sound_count_low()
+{
+  return 1;
 }
