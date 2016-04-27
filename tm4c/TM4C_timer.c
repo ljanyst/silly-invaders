@@ -102,11 +102,16 @@ static int32_t timer64_write(IO_io *io, const void *data, uint32_t length)
 
   uint64_t val = nsecs2ticks(*(const uint64_t*)data);
   int module_offset = io->channel * GPTM_MODULE_OFFSET;
-  GPTM_REG(module_offset, GPTM_TAILR) = (uint32_t)val;
-  GPTM_REG(module_offset, GPTM_TBILR) = (uint32_t)(val >> 32);
+  if(val) {
+    GPTM_REG(module_offset, GPTM_TAILR) = (uint32_t)val;
+    GPTM_REG(module_offset, GPTM_TBILR) = (uint32_t)(val >> 32);
 
-  // enable the timer
-  GPTM_REG(module_offset, GPTM_CTL) |= 1;
+    // enable the timer
+    GPTM_REG(module_offset, GPTM_CTL) |= 1;
+  }
+  else
+    GPTM_REG(module_offset, GPTM_CTL) &= ~1;
+
   return 1;
 }
 
