@@ -22,6 +22,7 @@
 #define IO_EIO 5
 #define IO_EAGAIN 11
 #define IO_EWOULDBLOCK 11
+#define IO_ENOMEM 12
 #define IO_EINVAL 22
 #define IO_ENOSYS 38
 #define IO_EOPNOTSUPP 95
