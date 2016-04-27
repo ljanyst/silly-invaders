@@ -17,26 +17,15 @@
 // along with silly-invaders.  If not, see <http://www.gnu.org/licenses/>.
 //------------------------------------------------------------------------------
 
-#include "IO_sound.h"
-#include "IO_error.h"
-#include "IO_utils.h"
+#pragma once
+
+#ifndef __IO_IMPL__
+#error "This is a low-level header for driver implementatino purposes only"
+#endif
+
+#include "IO.h"
 
 //------------------------------------------------------------------------------
-// Initialize a sound device
+//! Get number of sound devices available
 //------------------------------------------------------------------------------
-int32_t __IO_sound_init(IO_io *io, uint8_t module)
-{
-  return -IO_ENOSYS;
-}
-
-WEAK_ALIAS(__IO_sound_init, IO_sound_init);
-
-//------------------------------------------------------------------------------
-// Get number of sound devices available
-//------------------------------------------------------------------------------
-int32_t __IO_sound_count_low()
-{
-  return -IO_ENOSYS;
-}
-
-WEAK_ALIAS(__IO_sound_count_low, IO_sound_count_low);
+int32_t IO_sound_count_low();
