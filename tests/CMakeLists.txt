@@ -7,12 +7,12 @@ macro(add_test name)
   target_link_libraries(${name}.axf ${TM4C_LIB} io ${TIVAWARE_LIB})
 endmacro()
 
-set(tests startup;uart;uart-async;uart-dma;ssi-dma;gpio;display;timer;input;sound)
+set(tests startup;uart;uart-async;uart-dma;ssi-dma;gpio;display;timer;input;sound;rng)
 
 add_executable(test-00-startup.axf test-00-startup.c)
 add_raw_binary(test-00-startup.bin test-00-startup.axf)
 
-foreach(i RANGE 1 9)
+foreach(i RANGE 1 10)
   list(GET tests ${i} name)
   if(i LESS 10)
     add_test(test-0${i}-${name})
