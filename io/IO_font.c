@@ -25,10 +25,12 @@
 //------------------------------------------------------------------------------
 extern const IO_font DejaVuSans10;
 extern const IO_font DejaVuSerif10;
+extern const IO_font SilkScreen8;
 
 static const IO_font * const fonts[] = {
   &DejaVuSans10,
   &DejaVuSerif10,
+  &SilkScreen8,
   0
 };
 

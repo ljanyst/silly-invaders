@@ -11,6 +11,7 @@ endmacro()
 
 add_font(DejaVuSans 10)
 add_font(DejaVuSerif 10)
+add_font(SilkScreen 8)
 
 add_library(
   io STATIC
@@ -21,4 +22,5 @@ add_library(
   IO_font.c
   IO_sound.c
   fonts/DejaVuSans-10.c
-  fonts/DejaVuSerif-10.c)
+  fonts/DejaVuSerif-10.c
+  fonts/SilkScreen-8.c)
