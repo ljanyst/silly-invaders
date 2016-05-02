@@ -618,3 +618,13 @@ int32_t IO_get(IO_io *io, uint64_t *data)
     return -IO_EINVAL;
   return IO_read(io, data, 1);
 }
+
+//------------------------------------------------------------------------------
+// Get time
+//------------------------------------------------------------------------------
+uint64_t __IO_time()
+{
+  return 0;
+}
+
+WEAK_ALIAS(__IO_time, IO_time);
