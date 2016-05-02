@@ -102,6 +102,15 @@ void TM4C_pll_init()
 }
 
 //------------------------------------------------------------------------------
+// Count time in miliseconds
+//------------------------------------------------------------------------------
+static uint64_t time = 0;
+void systick_handler()
+{
+  ++time;
+}
+
+//------------------------------------------------------------------------------
 // Initialize the board
 //------------------------------------------------------------------------------
 int32_t TM4C_init()
@@ -115,6 +124,11 @@ int32_t TM4C_init()
   __asm__ volatile (
     "dsb\r\n"        // force memory writed before continuing
     "isb\r\n" );     // reset the pipeline
+
+  STCTRL_REG = 0;          // disable SysTick
+  STRELOAD_REG = 79999;    // fire every milisecond
+  STCURRENT_REG = 0;       // reload
+  STCTRL_REG = 0x07;       // core clock and interrupts
   return 0;
 }
 
@@ -191,4 +205,12 @@ void TM4C_enable_interrupt(uint8_t number, uint8_t priority)
    NVIC_EN_REG(en_reg) |= (1 << en_bit);
    NVIC_PRI_REG(pri_reg) &= ~(0x07 << pri_bits);
    NVIC_PRI_REG(pri_reg) |= ((priority & 0x07) << pri_bits);
+}
+
+//------------------------------------------------------------------------------
+// Get time
+//------------------------------------------------------------------------------
+uint64_t IO_time()
+{
+  return time;
 }
