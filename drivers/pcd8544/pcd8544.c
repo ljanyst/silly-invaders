@@ -100,7 +100,7 @@ int32_t PCD8544_get_attrs(IO_display_attrs *attrs)
 int32_t PCD8544_clear(pcd8544 *device)
 {
   for(int i = 0; i < 6; ++i)
-    for(int j = 0; j < 83; ++j)
+    for(int j = 0; j < 84; ++j)
       device->pixels[i][j] = 0;
   return 0;
 }
