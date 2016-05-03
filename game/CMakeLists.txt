@@ -23,6 +23,7 @@ add_bitmap(Invader4Img)
 add_executable(
   silly-invaders.axf
   silly-invaders.c
+  SI_scene.c
   bitmaps/BunkerDamagedImg.c
   bitmaps/BunkerImg.c
   bitmaps/DefenderImg.c
