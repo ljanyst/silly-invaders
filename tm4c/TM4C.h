@@ -186,7 +186,7 @@
 
 #define GPTM_MODULE_OFFSET 0x1000
 
-#define GPTM_REG_BASE(MODULE) (MODULE < 8 ? 0x40030000 : 0x40044000)
+#define GPTM_REG_BASE(MODULE) (MODULE < 0x8000 ? 0x40030000 : 0x40044000)
 #define GPTM_REG(MODULE, REG) (*(volatile unsigned long*)(GPTM_REG_BASE(MODULE) + MODULE + REG))
 
 //------------------------------------------------------------------------------
