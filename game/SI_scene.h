@@ -42,6 +42,7 @@ struct SI_object {
   uint16_t height;
   uint8_t  type;
   uint8_t  flags;
+  uint8_t  user_flags;
 };
 
 typedef struct SI_object SI_object;
