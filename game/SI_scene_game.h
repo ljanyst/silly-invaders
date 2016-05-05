@@ -17,29 +17,11 @@
 // along with silly-invaders.  If not, see <http://www.gnu.org/licenses/>.
 //------------------------------------------------------------------------------
 
+#pragma once
+
 #include "SI_scene.h"
-#include "SI_scene_game.h"
-#include "SI_hardware.h"
-
-#include <string.h>
 
 //------------------------------------------------------------------------------
-// Scenes
+//! Set up the game scene
 //------------------------------------------------------------------------------
-uint8_t state = 0;
-SI_scene scenes[1];
-
-//------------------------------------------------------------------------------
-// Start the show
-//------------------------------------------------------------------------------
-int main()
-{
-  SI_hardware_init();
-  memset(scenes, 0, sizeof(scenes));
-  game_scene_setup(&scenes[0]);
-
-  while(1) {
-    SI_scene_render(&scenes[state], &display, &scene_timer);
-    IO_wait_for_interrupt();
-  }
-}
+void game_scene_setup(SI_scene *scene);
