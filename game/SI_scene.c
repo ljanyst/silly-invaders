@@ -50,7 +50,7 @@ void SI_scene_render(SI_scene *scene, IO_io *display, IO_io *timer)
   IO_display_clear(display);
   for(int i = 0; i < scene->num_objects; ++i) {
     SI_object *obj = scene->objects[i];
-    if(obj->flags == SI_OBJECT_HIDDEN)
+    if(!(obj->flags & SI_OBJECT_VISIBLE))
       continue;
 
     if(obj->type == SI_OBJECT_BITMAP) {
@@ -63,6 +63,28 @@ void SI_scene_render(SI_scene *scene, IO_io *display, IO_io *timer)
     }
   }
   IO_sync(display);
+
+  if(scene->collision) {
+    for(int i = 0; i < scene->num_objects; ++i) {
+      SI_object *obj1 = scene->objects[i];
+      if(!(obj1->flags & SI_OBJECT_VISIBLE) ||
+         !(obj1->flags & SI_OBJECT_TRACKABLE))
+        continue;
+
+      for(int j = 0; j < scene->num_objects; ++j) {
+        SI_object *obj2 = scene->objects[j];
+        if(obj1 == obj2 || !(obj2->flags & SI_OBJECT_VISIBLE))
+          continue;
+
+        if(obj1->x < obj2->x + obj2->width &&
+           obj1->x + obj1->width > obj2->x &&
+           obj1->y < obj2->y + obj2->height &&
+           obj1->height + obj1->y > obj2->y) {
+           scene->collision(obj1, obj2);
+        }
+      }
+    }
+  }
 
   scene->flags = SI_SCENE_IGNORE;
   timer->event = scene_timer_event;

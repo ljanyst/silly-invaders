@@ -25,8 +25,9 @@
 //------------------------------------------------------------------------------
 // Object flags
 //------------------------------------------------------------------------------
-#define SI_OBJECT_VISIBLE 1
-#define SI_OBJECT_HIDDEN  0
+#define SI_OBJECT_VISIBLE   0x01
+#define SI_OBJECT_TRACKABLE 0x02
+
 #define SI_OBJECT_BITMAP  1
 #define SI_OBJECT_TEXT    2
 #define SI_OBJECT_DYNAMIC 3
