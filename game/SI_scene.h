@@ -28,10 +28,6 @@
 #define SI_OBJECT_VISIBLE   0x01
 #define SI_OBJECT_TRACKABLE 0x02
 
-#define SI_OBJECT_BITMAP  1
-#define SI_OBJECT_TEXT    2
-#define SI_OBJECT_DYNAMIC 3
-
 //------------------------------------------------------------------------------
 //! A scene object
 //------------------------------------------------------------------------------
@@ -40,9 +36,9 @@ struct SI_object {
   uint16_t y;
   uint16_t width;
   uint16_t height;
-  uint8_t  type;
   uint8_t  flags;
   uint8_t  user_flags;
+  void (*draw)(struct SI_object *this, IO_io *display);
 };
 
 typedef struct SI_object SI_object;
@@ -57,13 +53,7 @@ struct SI_object_bitmap {
 
 typedef struct SI_object_bitmap SI_object_bitmap;
 
-static inline void SI_object_set_bitmap(SI_object_bitmap *obj, const IO_bitmap *bmp)
-{
-  obj->bmp        = bmp;
-  obj->obj.width  = bmp->width;
-  obj->obj.height = bmp->height;
-  obj->obj.type   = SI_OBJECT_BITMAP;
-}
+void SI_object_bitmap_cons(SI_object_bitmap *obj, const IO_bitmap *bmp);
 
 //------------------------------------------------------------------------------
 //! A text object
@@ -75,16 +65,6 @@ struct SI_object_text {
 };
 
 typedef struct SI_object_text SI_object_text;
-
-//------------------------------------------------------------------------------
-//! A dynamic object drawn directly to the screen
-//------------------------------------------------------------------------------
-struct SI_object_dynamic {
-  SI_object obj;
-  void (*draw)(IO_io *display, struct SI_object_dynamic *obj);
-};
-
-typedef struct SI_object_dynamic SI_object_dynamic;
 
 //------------------------------------------------------------------------------
 // Scene flags

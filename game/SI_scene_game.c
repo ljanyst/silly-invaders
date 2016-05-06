@@ -57,7 +57,7 @@ const IO_bitmap MissleDownImg = {3, 6, 1, (void *)MissleDownImgData};
 // Game objects
 //------------------------------------------------------------------------------
 SI_object_bitmap  defender_obj;
-SI_object_dynamic score_obj;
+SI_object         score_obj;
 SI_object_bitmap  life_obj[3];
 SI_object_bitmap  invader_obj[5];
 SI_object_bitmap  bunker_obj[3];
@@ -74,7 +74,7 @@ SI_object_bitmap  missle_obj[6];
 //------------------------------------------------------------------------------
 // Draw score
 //------------------------------------------------------------------------------
-static void game_scene_draw_score(IO_io *display, SI_object_dynamic *obj)
+static void game_scene_draw_score(SI_object *obj, IO_io *display)
 {
   const IO_font *font = IO_font_get_by_name("SilkScreen8");
   IO_display_set_font(display, font);
@@ -166,7 +166,7 @@ static void game_scene_collision(SI_object *obj1, SI_object *obj2)
       if(bunker->bmp == &BunkerDamagedImg)
         obj2->flags &= ~SI_OBJECT_VISIBLE;
       else
-        SI_object_set_bitmap(bunker, &BunkerDamagedImg);
+        SI_object_bitmap_cons(bunker, &BunkerDamagedImg);
       obj1->flags &= ~SI_OBJECT_VISIBLE;
       break;
     }
@@ -184,7 +184,7 @@ void game_scene_setup(SI_scene *scene)
   }
 
   memset(&defender_obj, 0, sizeof(defender_obj));
-  SI_object_set_bitmap(&defender_obj, &DefenderImg);
+  SI_object_bitmap_cons(&defender_obj, &DefenderImg);
   defender_obj.obj.y = display_attrs.height - defender_obj.obj.height;
   defender_obj.obj.flags = SI_OBJECT_VISIBLE;
   defender_obj.obj.user_flags = SI_DEFENDER;
@@ -192,13 +192,12 @@ void game_scene_setup(SI_scene *scene)
 
   memset(&score_obj, 0, sizeof(score_obj));
   score_obj.draw = game_scene_draw_score;
-  score_obj.obj.type  = SI_OBJECT_DYNAMIC;
-  score_obj.obj.flags = SI_OBJECT_VISIBLE;
-  scene->objects[1] = &score_obj.obj;
+  score_obj.flags = SI_OBJECT_VISIBLE;
+  scene->objects[1] = &score_obj;
 
   memset(life_obj, 0, sizeof(life_obj));
   for(int i = 0; i < 3; ++i) {
-    SI_object_set_bitmap(&life_obj[i], &HeartImg);
+    SI_object_bitmap_cons(&life_obj[i], &HeartImg);
     life_obj[i].obj.flags = SI_OBJECT_VISIBLE;
     life_obj[i].obj.x = display_attrs.width+1 - (i+1)*(HeartImg.width+1);
     scene->objects[i+2] = &life_obj[i].obj;
@@ -213,7 +212,7 @@ void game_scene_setup(SI_scene *scene)
   }
   memset(invader_obj, 0, sizeof(invader_obj));
   for(int i = 0; i < 5; ++i) {
-    SI_object_set_bitmap(&invader_obj[i], invader_img);
+    SI_object_bitmap_cons(&invader_obj[i], invader_img);
     invader_obj[i].obj.flags = SI_OBJECT_VISIBLE;
     invader_obj[i].obj.user_flags = SI_INVADER;
     invader_obj[i].obj.y = 8;
@@ -225,7 +224,7 @@ void game_scene_setup(SI_scene *scene)
   uint16_t bunker_area = display_attrs.width/3;
   uint16_t bunker_offset = (bunker_area - BunkerImg.width)/2;
   for(int i = 0; i < 3; ++i) {
-    SI_object_set_bitmap(&bunker_obj[i], &BunkerImg);
+    SI_object_bitmap_cons(&bunker_obj[i], &BunkerImg);
     bunker_obj[i].obj.flags = SI_OBJECT_VISIBLE;
     bunker_obj[i].obj.user_flags = SI_BUNKER;
     bunker_obj[i].obj.y = display_attrs.height - 8;
@@ -234,13 +233,13 @@ void game_scene_setup(SI_scene *scene)
   }
 
   memset(missle_obj, 0, sizeof(missle_obj));
-  SI_object_set_bitmap(&missle_obj[0], &MissleUpImg);
+  SI_object_bitmap_cons(&missle_obj[0], &MissleUpImg);
   missle_obj[0].obj.flags = SI_OBJECT_TRACKABLE;
   missle_obj[0].obj.user_flags = SI_MISSLE;
   scene->objects[13] = &missle_obj[0].obj;
 
   for(int i = 1; i < 6; ++i) {
-    SI_object_set_bitmap(&missle_obj[i], &MissleDownImg);
+    SI_object_bitmap_cons(&missle_obj[i], &MissleDownImg);
     missle_obj[i].obj.flags = SI_OBJECT_TRACKABLE;
     missle_obj[i].obj.user_flags = SI_MISSLE;
     scene->objects[13+i] = &missle_obj[i].obj;

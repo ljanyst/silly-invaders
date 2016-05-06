@@ -23,6 +23,23 @@
 #include "SI_scene.h"
 
 //------------------------------------------------------------------------------
+// Bitmap
+//------------------------------------------------------------------------------
+void SI_object_bitmap_draw(SI_object *obj, IO_io *display)
+{
+  SI_object_bitmap *this = CONTAINER_OF(SI_object_bitmap, obj, obj);
+  IO_display_print_bitmap(display, obj->x, obj->y, this->bmp);
+}
+
+void SI_object_bitmap_cons(SI_object_bitmap *obj, const IO_bitmap *bmp)
+{
+  obj->bmp        = bmp;
+  obj->obj.width  = bmp->width;
+  obj->obj.height = bmp->height;
+  obj->obj.draw   = SI_object_bitmap_draw;
+}
+
+//------------------------------------------------------------------------------
 // This should be a map from a timer to a scene, but we're lazy
 //------------------------------------------------------------------------------
 static SI_scene *current_scene;
@@ -53,14 +70,7 @@ void SI_scene_render(SI_scene *scene, IO_io *display, IO_io *timer)
     if(!(obj->flags & SI_OBJECT_VISIBLE))
       continue;
 
-    if(obj->type == SI_OBJECT_BITMAP) {
-      SI_object_bitmap *bmp_obj = CONTAINER_OF(SI_object_bitmap, obj, obj);
-      IO_display_print_bitmap(display, obj->x, obj->y, bmp_obj->bmp);
-    }
-    else if(obj->type == SI_OBJECT_DYNAMIC) {
-      SI_object_dynamic *dyn_obj = CONTAINER_OF(SI_object_dynamic, obj, obj);
-      dyn_obj->draw(display, dyn_obj);
-    }
+    obj->draw(obj, display);
   }
   IO_sync(display);
 
