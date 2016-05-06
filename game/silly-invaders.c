@@ -32,7 +32,7 @@ uint8_t current_scene = SI_SCENE_INTRO;
 struct {
   SI_scene scene;
   void (*cons)(SI_scene *scene);
-} scenes[3];
+} scenes[4];
 
 //------------------------------------------------------------------------------
 // Set active scene
@@ -54,6 +54,7 @@ int main()
   scenes[SI_SCENE_INTRO].cons = intro_scene_setup;
   scenes[SI_SCENE_LEVEL].cons = level_scene_setup;
   scenes[SI_SCENE_GAME].cons  = game_scene_setup;
+  scenes[SI_SCENE_SCORE].cons = score_scene_setup;
   set_active_scene(SI_SCENE_INTRO);
 
   while(1) {

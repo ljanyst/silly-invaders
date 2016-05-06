@@ -162,8 +162,10 @@ static void game_scene_collision(SI_object *obj1, SI_object *obj2)
           level_scene_set_level(level+1);
           set_active_scene(SI_SCENE_LEVEL);
         }
-        else
-          set_active_scene(SI_SCENE_INTRO);
+        else {
+          score_scene_set_score(score);
+          set_active_scene(SI_SCENE_SCORE);
+        }
       }
       break;
 
@@ -172,8 +174,10 @@ static void game_scene_collision(SI_object *obj1, SI_object *obj2)
       if(lives) {
         --lives;
         life_obj[lives].obj.flags &= ~SI_OBJECT_VISIBLE;
-        if(lives == 0)
-          set_active_scene(SI_SCENE_INTRO);
+        if(lives == 0) {
+          score_scene_set_score(score);
+          set_active_scene(SI_SCENE_SCORE);
+        }
       }
       break;
 
@@ -273,4 +277,5 @@ void game_scene_setup(SI_scene *scene)
   scene->collision  = game_scene_collision;
   scene->fps   = 25;
   scene->flags = SI_SCENE_RENDER;
+  button_value = 0;
 }

@@ -27,6 +27,7 @@
 #define SI_SCENE_INTRO 0
 #define SI_SCENE_LEVEL 1
 #define SI_SCENE_GAME  2
+#define SI_SCENE_SCORE 3
 
 //------------------------------------------------------------------------------
 //! Set active scene
@@ -54,6 +55,16 @@ void intro_scene_setup(SI_scene *scene);
 void level_scene_setup(SI_scene *scene);
 
 //------------------------------------------------------------------------------
-//! Set level for the game scene
+//! Set level for the score scene
 //------------------------------------------------------------------------------
 void level_scene_set_level(uint8_t level);
+
+//------------------------------------------------------------------------------
+//! Set up the score scene
+//------------------------------------------------------------------------------
+void score_scene_setup(SI_scene *scene);
+
+//------------------------------------------------------------------------------
+//! Set score for the score scene
+//------------------------------------------------------------------------------
+void score_scene_set_score(uint32_t score);
