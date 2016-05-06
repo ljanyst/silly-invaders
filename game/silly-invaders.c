@@ -18,7 +18,7 @@
 //------------------------------------------------------------------------------
 
 #include "SI_scene.h"
-#include "SI_scenes.h"
+#include "SI.h"
 #include "SI_hardware.h"
 
 #include <string.h>
@@ -26,8 +26,22 @@
 //------------------------------------------------------------------------------
 // Scenes
 //------------------------------------------------------------------------------
-uint8_t state = 0;
-SI_scene scenes[1];
+
+uint8_t current_scene = SI_SCENE_INTRO;
+
+struct {
+  SI_scene scene;
+  void (*cons)(SI_scene *scene);
+} scenes[2];
+
+//------------------------------------------------------------------------------
+// Set active scene
+//------------------------------------------------------------------------------
+void set_active_scene(uint8_t scene)
+{
+  scenes[scene].cons(&scenes[scene].scene);
+  current_scene = scene;
+}
 
 //------------------------------------------------------------------------------
 // Start the show
@@ -36,10 +50,13 @@ int main()
 {
   SI_hardware_init();
   memset(scenes, 0, sizeof(scenes));
-  game_scene_setup(&scenes[0]);
+
+  scenes[SI_SCENE_INTRO].cons = intro_scene_setup;
+  scenes[SI_SCENE_GAME].cons  = game_scene_setup;
+  set_active_scene(SI_SCENE_INTRO);
 
   while(1) {
-    SI_scene_render(&scenes[state], &display, &scene_timer);
+    SI_scene_render(&scenes[current_scene].scene, &display, &scene_timer);
     IO_wait_for_interrupt();
   }
 }
