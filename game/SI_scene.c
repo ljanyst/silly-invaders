@@ -18,6 +18,7 @@
 //------------------------------------------------------------------------------
 
 #include <io/IO_display.h>
+#include <io/IO_font.h>
 #include <io/IO_utils.h>
 
 #include "SI_scene.h"
@@ -38,6 +39,27 @@ void SI_object_bitmap_cons(SI_object_bitmap *obj, const IO_bitmap *bmp)
   obj->obj.height = bmp->height;
   obj->obj.draw   = SI_object_bitmap_draw;
 }
+
+//------------------------------------------------------------------------------
+// Text
+//------------------------------------------------------------------------------
+void SI_object_text_draw(SI_object *obj, IO_io *display)
+{
+  SI_object_text *this = CONTAINER_OF(SI_object_text, obj, obj);
+  IO_display_set_font(display, this->font);
+  IO_display_cursor_goto(display, obj->x, obj->y);
+  IO_print(display, "%s", this->text);
+}
+
+void SI_object_text_cons(SI_object_text *obj, const IO_font *font,
+  const char *text)
+{
+  obj->text = text;
+  obj->font = font;
+  IO_font_get_box(font, text, &obj->obj.width, &obj->obj.height);
+  obj->obj.draw = SI_object_text_draw;
+}
+
 
 //------------------------------------------------------------------------------
 // This should be a map from a timer to a scene, but we're lazy

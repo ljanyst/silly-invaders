@@ -66,6 +66,9 @@ struct SI_object_text {
 
 typedef struct SI_object_text SI_object_text;
 
+void SI_object_text_cons(SI_object_text *obj, const IO_font *font,
+  const char *text);
+
 //------------------------------------------------------------------------------
 // Scene flags
 //------------------------------------------------------------------------------
