@@ -18,7 +18,7 @@
 //------------------------------------------------------------------------------
 
 #include "SI_scene.h"
-#include "SI_scene_game.h"
+#include "SI_scenes.h"
 #include "SI_hardware.h"
 
 #include <string.h>

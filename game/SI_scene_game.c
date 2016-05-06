@@ -17,7 +17,7 @@
 // along with silly-invaders.  If not, see <http://www.gnu.org/licenses/>.
 //------------------------------------------------------------------------------
 
-#include "SI_scene_game.h"
+#include "SI_scenes.h"
 #include "SI_hardware.h"
 
 #include <io/IO.h>
