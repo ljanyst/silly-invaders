@@ -53,8 +53,10 @@ static void intro_scene_pre_render(SI_scene *scene)
   else
     press_obj.obj.flags |= SI_OBJECT_VISIBLE;
 
-  if(button_value)
-    set_active_scene(SI_SCENE_GAME);
+  if(button_value) {
+    level_scene_set_level(1);
+    set_active_scene(SI_SCENE_LEVEL);
+  }
   button_value = 0;
 }
 

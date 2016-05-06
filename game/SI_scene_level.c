@@ -17,47 +17,70 @@
 // along with silly-invaders.  If not, see <http://www.gnu.org/licenses/>.
 //------------------------------------------------------------------------------
 
-#include "SI_scene.h"
 #include "SI.h"
 #include "SI_hardware.h"
+
+#include <io/IO.h>
+#include <io/IO_display.h>
+#include <io/IO_font.h>
+#include <io/IO_utils.h>
+#include <io/IO_malloc.h>
 
 #include <string.h>
 
 //------------------------------------------------------------------------------
-// Scenes
+// Intro objects
 //------------------------------------------------------------------------------
-
-uint8_t current_scene = SI_SCENE_INTRO;
-
-struct {
-  SI_scene scene;
-  void (*cons)(SI_scene *scene);
-} scenes[3];
+static SI_object_text level_obj;
+static uint8_t level = 1;
+static uint8_t secs  = 1;
+static char level_text[] = {'L', 'e', 'v', 'e', 'l', ' ', '1', 0};
 
 //------------------------------------------------------------------------------
-// Set active scene
+//! Set level for the game scene
 //------------------------------------------------------------------------------
-void set_active_scene(uint8_t scene)
+void level_scene_set_level(uint8_t lvl)
 {
-  scenes[scene].cons(&scenes[scene].scene);
-  current_scene = scene;
+  level = lvl;
 }
 
 //------------------------------------------------------------------------------
-// Start the show
+// Compute new positions of objects
 //------------------------------------------------------------------------------
-int main()
+static void level_scene_pre_render(SI_scene *scene)
 {
-  SI_hardware_init();
-  memset(scenes, 0, sizeof(scenes));
-
-  scenes[SI_SCENE_INTRO].cons = intro_scene_setup;
-  scenes[SI_SCENE_LEVEL].cons = level_scene_setup;
-  scenes[SI_SCENE_GAME].cons  = game_scene_setup;
-  set_active_scene(SI_SCENE_INTRO);
-
-  while(1) {
-    SI_scene_render(&scenes[current_scene].scene, &display, &scene_timer);
-    IO_wait_for_interrupt();
+  if(!secs) {
+    game_scene_set_level(level);
+    set_active_scene(SI_SCENE_GAME);
   }
+  --secs;
+}
+
+//------------------------------------------------------------------------------
+// Set up the level scene
+//------------------------------------------------------------------------------
+void level_scene_setup(SI_scene *scene)
+{
+  memset(scene, 0, sizeof(SI_scene));
+  if(!scene->num_objects) {
+    scene->objects = IO_malloc(sizeof(SI_object *));
+    scene->num_objects = 1;
+  }
+
+
+  level_text[6] = '0' + level;
+
+  memset(&level_obj, 0, sizeof(level_obj));
+  const IO_font *font = IO_font_get_by_name("DejaVuSerif10");
+  SI_object_text_cons(&level_obj, font, level_text);
+
+  level_obj.obj.y = (display_attrs.height - level_obj.obj.height)/2;
+  level_obj.obj.x = (display_attrs.width - level_obj.obj.width)/2;
+  level_obj.obj.flags = SI_OBJECT_VISIBLE;
+  scene->objects[0] = &level_obj.obj;
+
+  secs = 1;
+  scene->pre_render = level_scene_pre_render;
+  scene->fps   = 1;
+  scene->flags = SI_SCENE_RENDER;
 }

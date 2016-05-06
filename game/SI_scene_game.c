@@ -31,9 +31,10 @@
 //------------------------------------------------------------------------------
 // Scene variables
 //------------------------------------------------------------------------------
-uint32_t lives = 3;
-uint32_t score = 0;
-uint32_t level = 1;
+static uint32_t lives = 3;
+static uint32_t score = 0;
+static uint32_t level = 1;
+static uint32_t invaders = 5;
 
 //------------------------------------------------------------------------------
 // Bitmaps
@@ -70,6 +71,19 @@ static SI_object_bitmap  missle_obj[6];
 #define SI_INVADER   2
 #define SI_BUNKER    3
 #define SI_MISSLE    4
+
+//------------------------------------------------------------------------------
+//! Set level for the game scene
+//------------------------------------------------------------------------------
+void game_scene_set_level(uint8_t lvl)
+{
+  level = lvl;
+  invaders = 5;
+  if(level == 1) {
+    lives = 3;
+    score = 0;
+  }
+}
 
 //------------------------------------------------------------------------------
 // Draw score
@@ -139,9 +153,18 @@ static void game_scene_collision(SI_object *obj1, SI_object *obj2)
 {
   switch(obj2->user_flags) {
     case SI_INVADER:
+      --invaders;
       score += 25;
       obj2->flags &= ~SI_OBJECT_VISIBLE;
       obj1->flags &= ~SI_OBJECT_VISIBLE;
+      if(!invaders) {
+        if(level < 4) {
+          level_scene_set_level(level+1);
+          set_active_scene(SI_SCENE_LEVEL);
+        }
+        else
+          set_active_scene(SI_SCENE_INTRO);
+      }
       break;
 
     case SI_DEFENDER:
@@ -198,7 +221,8 @@ void game_scene_setup(SI_scene *scene)
   memset(life_obj, 0, sizeof(life_obj));
   for(int i = 0; i < 3; ++i) {
     SI_object_bitmap_cons(&life_obj[i], &HeartImg);
-    life_obj[i].obj.flags = SI_OBJECT_VISIBLE;
+    if(i < lives)
+      life_obj[i].obj.flags = SI_OBJECT_VISIBLE;
     life_obj[i].obj.x = display_attrs.width+1 - (i+1)*(HeartImg.width+1);
     scene->objects[i+2] = &life_obj[i].obj;
   }
