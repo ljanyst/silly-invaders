@@ -125,7 +125,7 @@ static void game_scene_pre_render(SI_scene *scene)
       if(missle_obj[i+1].obj.y >= display_attrs.height - 6)
         missle_obj[i+1].obj.flags &= ~SI_OBJECT_VISIBLE;
       else
-        missle_obj[i+1].obj.y += 2;
+        missle_obj[i+1].obj.y += 1;
     }
   }
 
