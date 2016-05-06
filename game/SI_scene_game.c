@@ -17,7 +17,7 @@
 // along with silly-invaders.  If not, see <http://www.gnu.org/licenses/>.
 //------------------------------------------------------------------------------
 
-#include "SI_scenes.h"
+#include "SI.h"
 #include "SI_hardware.h"
 
 #include <io/IO.h>
@@ -56,12 +56,12 @@ const IO_bitmap MissleDownImg = {3, 6, 1, (void *)MissleDownImgData};
 //------------------------------------------------------------------------------
 // Game objects
 //------------------------------------------------------------------------------
-SI_object_bitmap  defender_obj;
-SI_object         score_obj;
-SI_object_bitmap  life_obj[3];
-SI_object_bitmap  invader_obj[5];
-SI_object_bitmap  bunker_obj[3];
-SI_object_bitmap  missle_obj[6];
+static SI_object_bitmap  defender_obj;
+static SI_object         score_obj;
+static SI_object_bitmap  life_obj[3];
+static SI_object_bitmap  invader_obj[5];
+static SI_object_bitmap  bunker_obj[3];
+static SI_object_bitmap  missle_obj[6];
 
 //------------------------------------------------------------------------------
 // Game object types
@@ -178,6 +178,7 @@ static void game_scene_collision(SI_object *obj1, SI_object *obj2)
 //------------------------------------------------------------------------------
 void game_scene_setup(SI_scene *scene)
 {
+  memset(scene, 0, sizeof(SI_scene));
   if(!scene->num_objects) {
     scene->objects = IO_malloc(19*sizeof(SI_object *));
     scene->num_objects = 19;
