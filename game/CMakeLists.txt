@@ -26,6 +26,7 @@ add_executable(
   SI_hardware.c
   SI_scene.c
   SI_scene_game.c
+  SI_scene_intro.c
   bitmaps/BunkerDamagedImg.c
   bitmaps/BunkerImg.c
   bitmaps/DefenderImg.c

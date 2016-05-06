@@ -147,11 +147,10 @@ static void game_scene_collision(SI_object *obj1, SI_object *obj2)
     case SI_DEFENDER:
       obj1->flags &= ~SI_OBJECT_VISIBLE;
       if(lives) {
-        lives -= 1;
+        --lives;
         life_obj[lives].obj.flags &= ~SI_OBJECT_VISIBLE;
-        if(lives == 0) {
-          //game over
-        }
+        if(lives == 0)
+          set_active_scene(SI_SCENE_INTRO);
       }
       break;
 
