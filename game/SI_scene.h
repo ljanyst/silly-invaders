@@ -59,9 +59,9 @@ void SI_object_bitmap_cons(SI_object_bitmap *obj, const IO_bitmap *bmp);
 //! A text object
 //------------------------------------------------------------------------------
 struct SI_object_text {
-  SI_object   obj;
-  const char *text;
-  IO_font    *font;
+  SI_object      obj;
+  const char    *text;
+  const IO_font *font;
 };
 
 typedef struct SI_object_text SI_object_text;
