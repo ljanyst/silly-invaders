@@ -19,10 +19,10 @@
 
 #include "SI.h"
 #include "SI_hardware.h"
+#include "SI_sound.h"
 
 #include <io/IO.h>
 #include <io/IO_display.h>
-#include <io/IO_font.h>
 #include <io/IO_utils.h>
 #include <io/IO_malloc.h>
 
@@ -196,6 +196,7 @@ static void game_scene_pre_render(SI_scene *scene)
     missle_obj[0].obj.x = defender_obj.obj.x + 4;
     missle_obj[0].obj.flags |= SI_OBJECT_VISIBLE;
     button_value = 0;
+    IO_sound_play(&sound, &sound_timer, tune_shoot, 0);
   }
   else if(missle_obj[0].obj.flags & SI_OBJECT_VISIBLE) {
     if(missle_obj[0].obj.y <= 6)
@@ -240,6 +241,7 @@ static void game_scene_collision(SI_object *obj1, SI_object *obj2)
 {
   switch(obj2->user_flags) {
     case SI_INVADER:
+      IO_sound_play(&sound, &sound_timer, tune_hit, 0);
       --invaders;
       score += 25;
       obj2->flags &= ~SI_OBJECT_VISIBLE;
@@ -257,6 +259,7 @@ static void game_scene_collision(SI_object *obj1, SI_object *obj2)
       break;
 
     case SI_DEFENDER:
+      IO_sound_play(&sound, &sound_timer, tune_hit_me, 0);
       obj1->flags &= ~SI_OBJECT_VISIBLE;
       if(lives) {
         --lives;
