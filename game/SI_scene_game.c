@@ -38,6 +38,7 @@ static uint32_t invaders  = 5;
 static uint16_t x_pace    = 5;
 static uint16_t y_pace    = 100;
 static uint16_t shot_prob = 100;
+static uint16_t hit_score = 25;
 
 //------------------------------------------------------------------------------
 // Bitmaps
@@ -82,6 +83,7 @@ void game_scene_set_level(uint8_t lvl)
 {
   level = lvl;
   invaders = 5;
+  hit_score = 25 * level;
   switch(level) {
     case 1:
       lives     = 3;
@@ -243,7 +245,7 @@ static void game_scene_collision(SI_object *obj1, SI_object *obj2)
     case SI_INVADER:
       IO_sound_play(&sound, &sound_timer, tune_hit, 0);
       --invaders;
-      score += 25;
+      score += hit_score;
       obj2->flags &= ~SI_OBJECT_VISIBLE;
       obj1->flags &= ~SI_OBJECT_VISIBLE;
       if(!invaders) {
