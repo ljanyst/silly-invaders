@@ -132,15 +132,16 @@ static void move_invaders(SI_object_bitmap *invaders)
   //----------------------------------------------------------------------------
   // Calculate the position of the left and right-most invaders
   //----------------------------------------------------------------------------
-  int32_t x_left = -1;
-  int16_t width  = 0;
+  int32_t  x_left  = -1;
+  uint16_t x_right = 0;
   for(int i = 0; i < 5; ++i) {
     if(invaders[i].obj.flags & SI_OBJECT_VISIBLE) {
       if(x_left < 0)
         x_left = invaders[i].obj.x;
-      width += invaders[i].obj.width + 1;
+      x_right = invaders[i].obj.x;
     }
   }
+  uint16_t width = x_right - x_left + invaders[0].obj.width + 1;
 
   //----------------------------------------------------------------------------
   // If the left goal has been reached, calculate a new goal
@@ -163,7 +164,10 @@ static void move_invaders(SI_object_bitmap *invaders)
         invaders[i].obj.x += step;
       }
     }
-    if(!y_timer) {
+
+    uint16_t height_limit = display_attrs.height - invaders[0].obj.height;
+    height_limit -= bunker_obj[0].obj.y - 2;
+    if(!y_timer && invaders[0].obj.y > height_limit) {
       for(int i = 0; i < 5; ++i) {
         if(!(invaders[i].obj.flags & SI_OBJECT_VISIBLE))
           continue;
