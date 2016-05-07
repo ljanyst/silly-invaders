@@ -17,51 +17,29 @@
 // along with silly-invaders.  If not, see <http://www.gnu.org/licenses/>.
 //------------------------------------------------------------------------------
 
-#include "SI_scene.h"
-#include "SI.h"
-#include "SI_hardware.h"
 #include "SI_sound.h"
-
-#include <string.h>
-
-//------------------------------------------------------------------------------
-// Scenes
-//------------------------------------------------------------------------------
-
-uint8_t current_scene = SI_SCENE_INTRO;
-
-struct {
-  SI_scene scene;
-  void (*cons)(SI_scene *scene);
-} scenes[4];
+#include "SI_hardware.h"
 
 //------------------------------------------------------------------------------
-// Set active scene
+// Tunes
 //------------------------------------------------------------------------------
-void set_active_scene(uint8_t scene)
+IO_tune *tune_shoot;
+IO_tune *tune_hit;
+IO_tune *tune_hit_me;
+
+//------------------------------------------------------------------------------
+// RTTTLs
+//------------------------------------------------------------------------------
+static const char * const rtttl_shoot = ":d=4,o=6,b=125:16g5";
+static const char * const rtttl_hit = ":d=4,o=6,b=125:16d5,16d_5";
+static const char * const rtttl_hit_me = ":d=4,o=6,b=125:16g5,16a_5";
+
+//------------------------------------------------------------------------------
+// Initialize the hardware
+//------------------------------------------------------------------------------
+void SI_sound_init()
 {
-  scenes[scene].cons(&scenes[scene].scene);
-  current_scene = scene;
-}
-
-//------------------------------------------------------------------------------
-// Start the show
-//------------------------------------------------------------------------------
-int main()
-{
-  SI_hardware_init();
-  SI_sound_init();
-
-  memset(scenes, 0, sizeof(scenes));
-
-  scenes[SI_SCENE_INTRO].cons = intro_scene_setup;
-  scenes[SI_SCENE_LEVEL].cons = level_scene_setup;
-  scenes[SI_SCENE_GAME].cons  = game_scene_setup;
-  scenes[SI_SCENE_SCORE].cons = score_scene_setup;
-  set_active_scene(SI_SCENE_INTRO);
-
-  while(1) {
-    SI_scene_render(&scenes[current_scene].scene, &display, &scene_timer);
-    IO_wait_for_interrupt();
-  }
+  tune_shoot     = IO_sound_decode_RTTTL(rtttl_shoot);
+  tune_hit       = IO_sound_decode_RTTTL(rtttl_hit);
+  tune_hit_me    = IO_sound_decode_RTTTL(rtttl_hit_me);
 }

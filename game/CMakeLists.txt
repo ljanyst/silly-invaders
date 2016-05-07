@@ -29,6 +29,7 @@ add_executable(
   SI_scene_intro.c
   SI_scene_level.c
   SI_scene_score.c
+  SI_sound.c
   bitmaps/BunkerDamagedImg.c
   bitmaps/BunkerImg.c
   bitmaps/DefenderImg.c
