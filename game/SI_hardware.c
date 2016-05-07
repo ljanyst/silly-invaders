@@ -20,6 +20,7 @@
 #include <io/IO.h>
 #include <io/IO_display.h>
 #include <io/IO_device.h>
+#include <io/IO_sound.h>
 
 #include "SI_hardware.h"
 
@@ -31,6 +32,8 @@ IO_io scene_timer;
 IO_io slider;
 IO_io slider_timer;
 IO_io button[2];
+IO_io sound;
+IO_io sound_timer;
 
 //------------------------------------------------------------------------------
 // Hardware variables
@@ -98,4 +101,7 @@ void SI_hardware_init()
   button[1].event = button_event;
   IO_event_enable(&button[0], IO_EVENT_CHANGE);
   IO_event_enable(&button[1], IO_EVENT_CHANGE);
+
+  IO_sound_init(&sound, 0);
+  IO_timer_init(&sound_timer, 2);
 }
