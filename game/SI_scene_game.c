@@ -31,10 +31,13 @@
 //------------------------------------------------------------------------------
 // Scene variables
 //------------------------------------------------------------------------------
-static uint32_t lives = 3;
-static uint32_t score = 0;
-static uint32_t level = 1;
-static uint32_t invaders = 5;
+static uint32_t lives     = 3;
+static uint32_t score     = 0;
+static uint32_t level     = 1;
+static uint32_t invaders  = 5;
+static uint16_t x_pace    = 5;
+static uint16_t y_pace    = 100;
+static uint16_t shot_prob = 100;
 
 //------------------------------------------------------------------------------
 // Bitmaps
@@ -79,9 +82,29 @@ void game_scene_set_level(uint8_t lvl)
 {
   level = lvl;
   invaders = 5;
-  if(level == 1) {
-    lives = 3;
-    score = 0;
+  switch(level) {
+    case 1:
+      lives     = 3;
+      score     = 0;
+      x_pace    = 4;
+      y_pace    = 80;
+      shot_prob = 80;
+      break;
+    case 2:
+      x_pace    = 3;
+      y_pace    = 60;
+      shot_prob = 60;
+      break;
+    case 3:
+      x_pace    = 2;
+      y_pace    = 40;
+      shot_prob = 40;
+      break;
+    case 4:
+      x_pace    = 1;
+      y_pace    = 20;
+      shot_prob = 20;
+      break;
   }
 }
 
@@ -97,10 +120,69 @@ static void game_scene_draw_score(SI_object *obj, IO_io *display)
 }
 
 //------------------------------------------------------------------------------
+// Compute movement of the invaders
+//------------------------------------------------------------------------------
+static uint16_t invader_goal = 0;
+static uint16_t x_timer = 0;
+static uint16_t y_timer = 0;
+static void move_invaders(SI_object_bitmap *invaders)
+{
+  //----------------------------------------------------------------------------
+  // Calculate the position of the left and right-most invaders
+  //----------------------------------------------------------------------------
+  int32_t x_left = -1;
+  int16_t width  = 0;
+  for(int i = 0; i < 5; ++i) {
+    if(invaders[i].obj.flags & SI_OBJECT_VISIBLE) {
+      if(x_left < 0)
+        x_left = invaders[i].obj.x;
+      width += invaders[i].obj.width + 1;
+    }
+  }
+
+  //----------------------------------------------------------------------------
+  // If the left goal has been reached, calculate a new goal
+  //----------------------------------------------------------------------------
+  if(x_left == invader_goal) {
+    int16_t x_bracket = display_attrs.width - width;
+    invader_goal = IO_random() % x_bracket;
+  }
+  //----------------------------------------------------------------------------
+  // Move the invaders towards the left goal
+  //----------------------------------------------------------------------------
+  else {
+    if(!x_timer) {
+      int8_t step = 1;
+      if(invader_goal < x_left)
+        step = -1;
+      for(int i = 0; i < 5; ++i) {
+        if(!(invaders[i].obj.flags & SI_OBJECT_VISIBLE))
+          continue;
+        invaders[i].obj.x += step;
+      }
+    }
+    if(!y_timer) {
+      for(int i = 0; i < 5; ++i) {
+        if(!(invaders[i].obj.flags & SI_OBJECT_VISIBLE))
+          continue;
+        invaders[i].obj.y += 1;
+      }
+    }
+  }
+  ++x_timer;
+  ++y_timer;
+  x_timer %= x_pace;
+  y_timer %= y_pace;
+}
+
+//------------------------------------------------------------------------------
 // Compute new positions of objects
 //------------------------------------------------------------------------------
 static void game_scene_pre_render(SI_scene *scene)
 {
+  //----------------------------------------------------------------------------
+  // Defender position
+  //----------------------------------------------------------------------------
   uint32_t defx = display_attrs.width - defender_obj.obj.width;
   defx *= slider_value;
   defx /= 4095;
@@ -123,13 +205,18 @@ static void game_scene_pre_render(SI_scene *scene)
   }
 
   //----------------------------------------------------------------------------
+  // Invader position
+  //----------------------------------------------------------------------------
+  move_invaders(invader_obj);
+
+  //----------------------------------------------------------------------------
   // Invader missle
   //----------------------------------------------------------------------------
   for(int i = 0; i < 5; ++i) {
-    uint8_t shoot = IO_random() % 20;
+    uint8_t shoot = IO_random() % shot_prob;
     if(shoot && !(missle_obj[i+1].obj.flags & SI_OBJECT_VISIBLE) &&
        (invader_obj[i].obj.flags & SI_OBJECT_VISIBLE)) {
-      missle_obj[i+1].obj.y  = 8 + invader_obj[i].obj.height;
+      missle_obj[i+1].obj.y  = invader_obj[i].obj.y + 1 + invader_obj[i].obj.height;
       uint16_t x_off = invader_obj[i].obj.width - missle_obj[i+1].obj.width;
       x_off /= 2;
       missle_obj[i+1].obj.x = invader_obj[i].obj.x + x_off;
@@ -184,6 +271,7 @@ static void game_scene_collision(SI_object *obj1, SI_object *obj2)
     case SI_MISSLE:
       obj2->flags &= ~SI_OBJECT_VISIBLE;
       obj1->flags &= ~SI_OBJECT_VISIBLE;
+      ++score;
       break;
 
     case SI_BUNKER:
@@ -238,13 +326,16 @@ void game_scene_setup(SI_scene *scene)
     case 3: invader_img = &Invader3Img; break;
     case 4: invader_img = &Invader4Img; break;
   }
+  uint16_t inv_bracket = display_attrs.width - 5*(invader_img->width+1);
+  uint16_t x_off = IO_random() % inv_bracket;
+  invader_goal = x_off;
   memset(invader_obj, 0, sizeof(invader_obj));
   for(int i = 0; i < 5; ++i) {
     SI_object_bitmap_cons(&invader_obj[i], invader_img);
     invader_obj[i].obj.flags = SI_OBJECT_VISIBLE;
     invader_obj[i].obj.user_flags = SI_INVADER;
     invader_obj[i].obj.y = 8;
-    invader_obj[i].obj.x = i*(invader_img->width+1);
+    invader_obj[i].obj.x = x_off + i*(invader_img->width+1);
     scene->objects[i+5] = &invader_obj[i].obj;
   }
 
