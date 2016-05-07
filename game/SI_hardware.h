@@ -28,6 +28,7 @@ extern IO_io display;
 extern IO_io scene_timer;
 extern IO_io sound;
 extern IO_io sound_timer;
+extern IO_io led;
 
 //------------------------------------------------------------------------------
 // Hardware values

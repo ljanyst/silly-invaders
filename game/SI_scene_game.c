@@ -249,6 +249,7 @@ static void game_scene_collision(SI_object *obj1, SI_object *obj2)
       obj2->flags &= ~SI_OBJECT_VISIBLE;
       obj1->flags &= ~SI_OBJECT_VISIBLE;
       if(!invaders) {
+        IO_set(&led, 0);
         if(level < 4) {
           level_scene_set_level(level+1);
           set_active_scene(SI_SCENE_LEVEL);
@@ -269,6 +270,7 @@ static void game_scene_collision(SI_object *obj1, SI_object *obj2)
         if(lives == 0) {
           score_scene_set_score(score);
           set_active_scene(SI_SCENE_SCORE);
+          IO_set(&led, 0);
         }
       }
       break;
@@ -374,4 +376,6 @@ void game_scene_setup(SI_scene *scene)
   scene->fps   = 25;
   scene->flags = SI_SCENE_RENDER;
   button_value = 0;
+
+  IO_set(&led, 1);
 }

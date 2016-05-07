@@ -34,6 +34,7 @@ IO_io slider_timer;
 IO_io button[2];
 IO_io sound;
 IO_io sound_timer;
+IO_io led;
 
 //------------------------------------------------------------------------------
 // Hardware variables
@@ -104,4 +105,6 @@ void SI_hardware_init()
 
   IO_sound_init(&sound, 0);
   IO_timer_init(&sound_timer, 2);
+
+  IO_led_init(&led, 0);
 }
