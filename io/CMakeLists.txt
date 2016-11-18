@@ -5,7 +5,7 @@ macro(add_font name size)
   add_custom_command(
     OUTPUT ${out_name}
     COMMAND ${CMAKE_SOURCE_DIR}/io/fonts/extract-glyphs.py ${name}${size} ${font_name} ${size} ${out_name}
-    DEPENDS ${fonr_name}
+    DEPENDS ${font_name}
     COMMENT "Creating font ${name}-${size}")
 endmacro()
 
