@@ -1,7 +1,7 @@
 
 macro(add_font name size)
-  set(out_name fonts/${name}-${size}.c)
-  set(font_name fonts/${name}.ttf)
+  set(out_name ${CMAKE_BINARY_DIR}/io/fonts/${name}-${size}.c)
+  set(font_name ${CMAKE_SOURCE_DIR}/io/fonts/${name}.ttf)
   add_custom_command(
     OUTPUT ${out_name}
     COMMAND ${CMAKE_SOURCE_DIR}/io/fonts/extract-glyphs.py ${name}${size} ${font_name} ${size} ${out_name}

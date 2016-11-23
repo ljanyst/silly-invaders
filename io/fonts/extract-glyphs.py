@@ -197,6 +197,9 @@ def main():
   # Open the result file and write the data
   #-----------------------------------------------------------------------------
   try:
+    outdir='/'.join(sys.argv[4].split('/')[:-1])
+    if not os.path.isdir(outdir):
+      os.makedirs(outdir)
     fo = open(sys.argv[4], "w")
     writeHeader(fo)
     writeGlyphs(fo, name, glyphs)

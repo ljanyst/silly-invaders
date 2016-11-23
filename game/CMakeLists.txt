@@ -1,7 +1,7 @@
 
 macro(add_bitmap name)
-  set(out_name bitmaps/${name}.c)
-  set(bmp_name bitmaps/${name}.bmp)
+  set(out_name ${CMAKE_BINARY_DIR}/game/bitmaps/${name}.c)
+  set(bmp_name ${CMAKE_SOURCE_DIR}/game/bitmaps/${name}.bmp)
   add_custom_command(
     OUTPUT ${out_name}
     COMMAND ${CMAKE_SOURCE_DIR}/game/bitmaps/convert-bitmap.py ${name} ${bmp_name} ${out_name}
