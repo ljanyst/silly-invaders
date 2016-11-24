@@ -21,6 +21,7 @@
 #include <io/IO_error.h>
 #include "TM4C.h"
 #include "TM4C_gpio.h"
+#include "TM4C_timer.h"
 
 //------------------------------------------------------------------------------
 // Port interrupts
@@ -163,6 +164,16 @@ static int32_t timer_sync(IO_io *io)
 // Initialize a timer
 //------------------------------------------------------------------------------
 int32_t IO_timer_init(IO_io *io, uint8_t module)
+{
+  if(module > 10)
+    return -IO_EINVAL;
+  return TM4C_timer_init(io, module);
+}
+
+//------------------------------------------------------------------------------
+// Initialize a timer
+//------------------------------------------------------------------------------
+int32_t TM4C_timer_init(IO_io *io, uint8_t module)
 {
   if(module > 11)
     return -IO_EINVAL;

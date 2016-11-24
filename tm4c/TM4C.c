@@ -26,6 +26,7 @@
 #include "TM4C_events.h"
 #include "TM4C_gpio.h"
 #include "TM4C_dma.h"
+#include "TM4C_timer.h"
 
 extern unsigned long __bss_end_vma;
 
@@ -115,10 +116,12 @@ void TM4C_pll_init()
 //------------------------------------------------------------------------------
 // Count time in miliseconds
 //------------------------------------------------------------------------------
+static IO_io tick_timer;
 static uint64_t time = 0;
-void systick_handler()
+static void tick_event(IO_io *io, uint16_t event)
 {
   ++time;
+  IO_set(&tick_timer, 1000000); // fire in a milisecond
 }
 
 //------------------------------------------------------------------------------
@@ -136,10 +139,9 @@ int32_t TM4C_init(uint32_t stack_size)
     "dsb\r\n"        // force memory writed before continuing
     "isb\r\n" );     // reset the pipeline
 
-  STCTRL_REG = 0;          // disable SysTick
-  STRELOAD_REG = 79999;    // fire every milisecond
-  STCURRENT_REG = 0;       // reload
-  STCTRL_REG = 0x07;       // core clock and interrupts
+  TM4C_timer_init(&tick_timer, 11);
+  tick_timer.event = tick_event;
+  tick_event(0, 0);
   return 0;
 }
 
