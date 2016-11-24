@@ -32,12 +32,23 @@ extern unsigned long __bss_end_vma;
 //------------------------------------------------------------------------------
 // Set up heap
 //------------------------------------------------------------------------------
-void TM4C_heap_init()
+void TM4C_heap_init(uint32_t stack_size)
 {
-  uint8_t *stack_start = (uint8_t *)0x20007ff8;
-  uint8_t *stack_end   = stack_start-4120;
-  uint8_t *stack_guard = stack_end-32;
+  //----------------------------------------------------------------------------
+  // Calculate the heap boundry
+  //----------------------------------------------------------------------------
   uint8_t *heap_start  = (uint8_t *)&__bss_end_vma;
+  uint8_t *stack_start = (uint8_t *)0x20007ff8;
+
+  if(!stack_size) {
+    IO_set_up_heap(heap_start, stack_start);
+    return;
+  }
+
+  uint32_t tmp = 0x20007ff8 - stack_size;
+  tmp = (((tmp-1)>>5)<<5); // align to 32 bytes making it larger if necessary
+  uint8_t *stack_end   = (uint8_t *)tmp;
+  uint8_t *stack_guard = stack_end-32;
 
   //----------------------------------------------------------------------------
   // Protect the guard chunk
@@ -113,11 +124,11 @@ void systick_handler()
 //------------------------------------------------------------------------------
 // Initialize the board
 //------------------------------------------------------------------------------
-int32_t TM4C_init()
+int32_t TM4C_init(uint32_t stack_size)
 {
   TM4C_pll_init();
   TM4C_dma_init();
-  TM4C_heap_init();
+  TM4C_heap_init(stack_size);
 
   // Enable the floating point coprocessor
   CPAC_REG |= (0x0f << 20);
