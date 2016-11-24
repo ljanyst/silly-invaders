@@ -78,7 +78,7 @@ void button_event(IO_io *io, uint16_t event)
 //------------------------------------------------------------------------------
 int main()
 {
-  IO_init();
+  IO_init(4096);
   IO_display_init(&display, 0);
 
   IO_button_init(&button[0], 0, IO_ASYNC);

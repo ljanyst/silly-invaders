@@ -62,7 +62,7 @@ void uart_event(IO_io *io, uint16_t event)
 //------------------------------------------------------------------------------
 int main()
 {
-  IO_init();
+  IO_init(4096);
   IO_ssi_attrs ssi0_attrs;
   memset(&ssi0_attrs, 0, sizeof(IO_ssi_attrs));
   ssi0_attrs.bandwidth = 2000000;

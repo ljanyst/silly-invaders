@@ -39,7 +39,7 @@ void uart_event(IO_io *io, uint16_t event)
 //------------------------------------------------------------------------------
 int main()
 {
-  IO_init();
+  IO_init(4096);
   IO_io uart0;
   IO_uart_init(&uart0, 0, IO_DMA|IO_ASYNC, 115200);
   uart0.event = uart_event;

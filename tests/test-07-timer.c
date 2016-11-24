@@ -44,7 +44,7 @@ void timer_event(IO_io *io, uint16_t event)
 //------------------------------------------------------------------------------
 int main()
 {
-  IO_init();
+  IO_init(4096);
   IO_gpio_init(&led[0], 41, 0, 1);
   IO_gpio_init(&led[1], 42, 0, 1);
   IO_timer_init(&timer, 0);

@@ -198,7 +198,7 @@ void print_centered(IO_io *display, const IO_font *font, const char *text)
 //------------------------------------------------------------------------------
 int main()
 {
-  IO_init();
+  IO_init(4096);
   IO_io display;
   IO_display_init(&display, 0);
 
