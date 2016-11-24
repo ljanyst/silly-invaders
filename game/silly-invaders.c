@@ -21,6 +21,7 @@
 #include "SI.h"
 #include "SI_hardware.h"
 #include "SI_sound.h"
+#include "io/IO_sys.h"
 
 #include <string.h>
 
