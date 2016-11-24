@@ -82,7 +82,7 @@ void button_event(IO_io *io, uint16_t event)
 //------------------------------------------------------------------------------
 void SI_hardware_init()
 {
-  IO_init();
+  IO_init(4096);
 
   IO_display_init(&display, 0);
   IO_display_get_attrs(&display, &display_attrs);
