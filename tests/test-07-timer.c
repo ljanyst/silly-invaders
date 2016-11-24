@@ -18,6 +18,7 @@
 //------------------------------------------------------------------------------
 
 #include <io/IO.h>
+#include <io/IO_sys.h>
 #include <io/IO_device.h>
 
 IO_io led[2];

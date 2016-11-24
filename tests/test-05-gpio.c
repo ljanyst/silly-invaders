@@ -18,6 +18,7 @@
 //------------------------------------------------------------------------------
 
 #include <io/IO.h>
+#include <io/IO_sys.h>
 #include <io/IO_device.h>
 
 #define PULLUP_REG (*(volatile unsigned long *)0x4005d510)
