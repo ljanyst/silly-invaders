@@ -22,6 +22,7 @@ add_library(
   IO_font.c
   IO_sound.c
   IO_profiler.c
+  IO_sys.c
   fonts/DejaVuSans-10.c
   fonts/DejaVuSerif-10.c
   fonts/SilkScreen-8.c)
