@@ -8,6 +8,7 @@ add_library(
   TM4C_gpio.c
   TM4C_timer.c
   TM4C_adc.c
+  TM4C_sys.c
   TM4C.c)
 
 add_library(
