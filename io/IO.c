@@ -573,24 +573,6 @@ int32_t __IO_event_disable(IO_io *io, uint16_t events)
 WEAK_ALIAS(__IO_event_disable, IO_event_disable);
 
 //------------------------------------------------------------------------------
-// Enable interrupts
-//------------------------------------------------------------------------------
-void __IO_enable_interrupts() {}
-WEAK_ALIAS(__IO_enable_interrupts, IO_enable_interrupts);
-
-//------------------------------------------------------------------------------
-// Disable interrupts
-//------------------------------------------------------------------------------
-void __IO_disable_interrupts() {}
-WEAK_ALIAS(__IO_disable_interrupts, IO_disable_interrupts);
-
-//------------------------------------------------------------------------------
-// Wait for an interrupt
-//------------------------------------------------------------------------------
-void __IO_wait_for_interrupt() {}
-WEAK_ALIAS(__IO_wait_for_interrupt, IO_wait_for_interrupt);
-
-//------------------------------------------------------------------------------
 // Sync
 //------------------------------------------------------------------------------
 uint32_t IO_sync(IO_io *io)
