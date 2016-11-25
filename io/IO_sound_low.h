@@ -20,7 +20,7 @@
 #pragma once
 
 #ifndef __IO_IMPL__
-#error "This is a low-level header for driver implementatino purposes only"
+#error "This is a low-level header for driver implementation purposes only"
 #endif
 
 #include "IO.h"
