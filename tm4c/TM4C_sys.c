@@ -19,6 +19,10 @@
 
 #define __IO_IMPL__
 
+#include "io/IO_sys.h"
+#include "io/IO_sys_low.h"
+#include "TM4C.h"
+
 //------------------------------------------------------------------------------
 // Enable interrupts
 //------------------------------------------------------------------------------
@@ -41,4 +45,26 @@ void IO_disable_interrupts()
 void IO_wait_for_interrupt()
 {
   __asm__ volatile("wfi");
+}
+
+//------------------------------------------------------------------------------
+// Set up the stack and launch the thread - implemented in assembly
+//------------------------------------------------------------------------------
+void TM4C_sys_start();
+
+//------------------------------------------------------------------------------
+// Start the system
+//------------------------------------------------------------------------------
+void IO_sys_start(uint32_t time_slice)
+{
+  //----------------------------------------------------------------------------
+  // Set up systic and start the first thread
+  //----------------------------------------------------------------------------
+  time_slice *= 80;              // we have an 80MHz clock = 12.5ns ticks
+  STCTRL_REG     = 0;            // turn off
+  STCURRENT_REG  = 0;            // reset
+  SYSPRI3_REG   |= 0xE0000000;   // priority 7
+  STRELOAD_REG   = time_slice-1; // reload value
+  STCTRL_REG     = 0x00000007;   // enable, core clock and interrupt arm
+  TM4C_sys_start();              // set up the stack and run the thread
 }
