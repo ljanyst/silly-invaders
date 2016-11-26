@@ -44,7 +44,7 @@ int32_t IO_profiler_channel_add(uint8_t num, IO_io *gpio)
 //------------------------------------------------------------------------------
 int32_t IO_profiler_toggle(uint8_t num)
 {
-  if(num > 15)
+  if(num > 15 || !prf_channels[num])
     return -IO_EINVAL;
 
   if(prf_state & (1 << num)) {
