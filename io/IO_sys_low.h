@@ -19,50 +19,27 @@
 
 #pragma once
 
+#ifndef __IO_IMPL__
+#error "This is a low-level header for driver implementation purposes only"
+#endif
+
 #include <stdint.h>
 
 //------------------------------------------------------------------------------
-//! Enable interrupts
-//------------------------------------------------------------------------------
-void IO_enable_interrupts();
-
-//------------------------------------------------------------------------------
-//! Disable interrupts
-//------------------------------------------------------------------------------
-void IO_disable_interrupts();
-
-//------------------------------------------------------------------------------
-//! Wait for an interrupt
-//------------------------------------------------------------------------------
-void IO_wait_for_interrupt();
-
-//------------------------------------------------------------------------------
-//! Thread control block
-//------------------------------------------------------------------------------
-#define IO_SYS_STACK_SIZE 250
-
-struct IO_sys_thread {
-  uint32_t *stack_ptr;
-  struct IO_sys_thread *next;
-  uint32_t  stack[IO_SYS_STACK_SIZE] __attribute__((aligned(8)));
-  uint8_t   priority;
-  uint8_t   profiler;
-};
-
-typedef struct IO_sys_thread IO_sys_thread;
-
-//------------------------------------------------------------------------------
-//! Register a thread
+//! Initialize systick
 //!
-//! @param thread   thread control block
-//! @param func     thread function
-//! @param priority thread priority
+//! @param time_slice time slice in microseconds
 //------------------------------------------------------------------------------
-void IO_sys_thread_add(IO_sys_thread *thread, void (*func)(), uint8_t priority);
+void IO_sys_tick_init(uint32_t time_slice);
 
 //------------------------------------------------------------------------------
-//! Run the operating system
+//! Start the system
 //!
 //! @param time_slice timeslice in microseconds
 //------------------------------------------------------------------------------
-void IO_sys_run(uint32_t time_slice);
+void IO_sys_start(uint32_t time_slice);
+
+//------------------------------------------------------------------------------
+//! Schedule the next thread to run
+//------------------------------------------------------------------------------
+void IO_sys_schedule();
