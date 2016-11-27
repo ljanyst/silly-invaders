@@ -56,7 +56,8 @@ WEAK_ALIAS(__IO_sys_start, IO_sys_start);
 //------------------------------------------------------------------------------
 // Initialize the stack
 //------------------------------------------------------------------------------
-void __IO_sys_stack_init(IO_sys_thread *thread, void (*func)()) {}
+void __IO_sys_stack_init(IO_sys_thread *thread, void (*func)(void *),
+  void *arg) {}
 WEAK_ALIAS(__IO_sys_stack_init, IO_sys_stack_init);
 
 //------------------------------------------------------------------------------
@@ -70,6 +71,37 @@ WEAK_ALIAS(__IO_sys_yield, IO_sys_yield);
 //------------------------------------------------------------------------------
 static IO_sys_thread *threads = 0;
 IO_sys_thread *IO_sys_current = 0;
+static IO_sys_thread iddle_thread;
+
+//------------------------------------------------------------------------------
+// Thread wrapper
+//------------------------------------------------------------------------------
+static void thread_wrapper(void *arg)
+{
+  IO_sys_thread *tcb = (IO_sys_thread *)arg;
+  tcb->func();
+  IO_disable_interrupts();
+  if(tcb != tcb->next) {
+    IO_sys_thread *cur;
+    for(cur = threads; cur->next != tcb; cur = cur->next);
+    cur->next = cur->next->next;
+  }
+  else {
+    threads = 0;
+    IO_sys_current = 0;
+  }
+  IO_sys_yield();
+  IO_enable_interrupts();
+}
+
+//------------------------------------------------------------------------------
+// Iddle thread
+//------------------------------------------------------------------------------
+static void iddle_thread_func(void *arg)
+{
+  (void)arg;
+  while(1) IO_wait_for_interrupt();
+}
 
 //------------------------------------------------------------------------------
 // Register a thread
@@ -78,6 +110,7 @@ void IO_sys_thread_add(IO_sys_thread *thread, void (*func)(), uint8_t priority)
 {
   IO_disable_interrupts();
   thread->priority = priority;
+  thread->func     = func;
   if(threads == 0) {
     threads = thread;
     thread->next = thread;
@@ -90,7 +123,7 @@ void IO_sys_thread_add(IO_sys_thread *thread, void (*func)(), uint8_t priority)
     last->next = threads;
   }
 
-  IO_sys_stack_init(thread, func);
+  IO_sys_stack_init(thread, thread_wrapper, thread);
   IO_enable_interrupts();
 }
 
@@ -100,6 +133,8 @@ void IO_sys_thread_add(IO_sys_thread *thread, void (*func)(), uint8_t priority)
 void IO_sys_run(uint32_t time_slice)
 {
   IO_disable_interrupts();
+  IO_sys_stack_init(&iddle_thread, iddle_thread_func, 0);
+  iddle_thread.next = &iddle_thread;
   IO_sys_current = threads;
   IO_sys_start(time_slice);
 }
@@ -109,5 +144,8 @@ void IO_sys_run(uint32_t time_slice)
 //------------------------------------------------------------------------------
 void IO_sys_schedule()
 {
-  IO_sys_current = IO_sys_current->next;
+  if(!IO_sys_current)
+    IO_sys_current = &iddle_thread;
+  else
+    IO_sys_current = IO_sys_current->next;
 }

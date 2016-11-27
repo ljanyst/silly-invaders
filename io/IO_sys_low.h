@@ -49,5 +49,6 @@ void IO_sys_schedule();
 //!
 //! @param thread the thread control block
 //! @param func   the thread function
+//! @param arg    the argument to the thread functinon
 //------------------------------------------------------------------------------
-void IO_sys_stack_init(IO_sys_thread *thread, void (*func)());
+void IO_sys_stack_init(IO_sys_thread *thread, void (*func)(void *), void *arg);
