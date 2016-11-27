@@ -46,7 +46,6 @@ struct IO_sys_thread {
   struct IO_sys_thread *next;
   uint32_t  stack[IO_SYS_STACK_SIZE] __attribute__((aligned(8)));
   uint8_t   priority;
-  uint8_t   profiler;
 };
 
 typedef struct IO_sys_thread IO_sys_thread;

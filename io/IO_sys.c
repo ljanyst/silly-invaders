@@ -54,6 +54,12 @@ void __IO_sys_start(uint32_t time_slice) {}
 WEAK_ALIAS(__IO_sys_start, IO_sys_start);
 
 //------------------------------------------------------------------------------
+// Initialize the stack
+//------------------------------------------------------------------------------
+void __IO_sys_stack_init(IO_sys_thread *thread, void (*func)()) {}
+WEAK_ALIAS(__IO_sys_stack_init, IO_sys_stack_init);
+
+//------------------------------------------------------------------------------
 // Thread book keeping
 //------------------------------------------------------------------------------
 static IO_sys_thread *threads = 0;
@@ -78,9 +84,7 @@ void IO_sys_thread_add(IO_sys_thread *thread, void (*func)(), uint8_t priority)
     last->next = threads;
   }
 
-  thread->stack[IO_SYS_STACK_SIZE-1] = 0x01000000;      // PSR with thumb bit
-  thread->stack[IO_SYS_STACK_SIZE-2] = (uint32_t)func;  // link register
-  thread->stack_ptr = &thread->stack[IO_SYS_STACK_SIZE-16]; // top of the stack
+  IO_sys_stack_init(thread, func);
   IO_enable_interrupts();
 }
 
@@ -93,7 +97,6 @@ void IO_sys_run(uint32_t time_slice)
   IO_sys_current = threads;
   IO_sys_start(time_slice);
 }
-
 
 //------------------------------------------------------------------------------
 // Schedule the next thread to run

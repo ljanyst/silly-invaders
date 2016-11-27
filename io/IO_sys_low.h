@@ -43,3 +43,11 @@ void IO_sys_start(uint32_t time_slice);
 //! Schedule the next thread to run
 //------------------------------------------------------------------------------
 void IO_sys_schedule();
+
+//------------------------------------------------------------------------------
+//! Initialize the stack
+//!
+//! @param thread the thread control block
+//! @param func   the thread function
+//------------------------------------------------------------------------------
+void IO_sys_stack_init(IO_sys_thread *thread, void (*func)());
