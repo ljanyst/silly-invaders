@@ -60,6 +60,12 @@ void __IO_sys_stack_init(IO_sys_thread *thread, void (*func)()) {}
 WEAK_ALIAS(__IO_sys_stack_init, IO_sys_stack_init);
 
 //------------------------------------------------------------------------------
+// Yield the CPU
+//------------------------------------------------------------------------------
+void __IO_sys_yield() {}
+WEAK_ALIAS(__IO_sys_yield, IO_sys_yield);
+
+//------------------------------------------------------------------------------
 // Thread book keeping
 //------------------------------------------------------------------------------
 static IO_sys_thread *threads = 0;

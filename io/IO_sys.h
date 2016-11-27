@@ -65,3 +65,8 @@ void IO_sys_thread_add(IO_sys_thread *thread, void (*func)(), uint8_t priority);
 //! @param time_slice timeslice in microseconds
 //------------------------------------------------------------------------------
 void IO_sys_run(uint32_t time_slice);
+
+//------------------------------------------------------------------------------
+//! Yield the CPU
+//------------------------------------------------------------------------------
+void IO_sys_yield();
