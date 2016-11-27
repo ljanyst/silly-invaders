@@ -78,3 +78,12 @@ void IO_sys_stack_init(IO_sys_thread *thread, void (*func)())
   thread->stack[IO_SYS_STACK_SIZE-2] = (uint32_t)func;  // link register
   thread->stack_ptr = &thread->stack[IO_SYS_STACK_SIZE-16]; // top of the stack
 }
+
+//------------------------------------------------------------------------------
+// Yield the CPU
+//------------------------------------------------------------------------------
+void IO_sys_yield()
+{
+  STCURRENT_REG = 0;          // clear the systick counter
+  INTCTRL_REG   = 0x04000000; // trigger systick
+}
