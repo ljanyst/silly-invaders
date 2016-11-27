@@ -68,3 +68,13 @@ void IO_sys_start(uint32_t time_slice)
   STCTRL_REG     = 0x00000007;   // enable, core clock and interrupt arm
   TM4C_sys_start();              // set up the stack and run the thread
 }
+
+//------------------------------------------------------------------------------
+// Initialize the stack
+//------------------------------------------------------------------------------
+void IO_sys_stack_init(IO_sys_thread *thread, void (*func)())
+{
+  thread->stack[IO_SYS_STACK_SIZE-1] = 0x01000000;      // PSR with thumb bit
+  thread->stack[IO_SYS_STACK_SIZE-2] = (uint32_t)func;  // link register
+  thread->stack_ptr = &thread->stack[IO_SYS_STACK_SIZE-16]; // top of the stack
+}
