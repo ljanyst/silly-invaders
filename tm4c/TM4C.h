@@ -27,6 +27,7 @@
 #define STCTRL_REG           (*(volatile unsigned long *)0xe000e010)
 #define STRELOAD_REG         (*(volatile unsigned long *)0xe000e014)
 #define STCURRENT_REG        (*(volatile unsigned long *)0xe000e018)
+#define INTCTRL_REG          (*(volatile unsigned long *)0xe000ed04)
 #define NVIC_EN0_REG         (*(volatile unsigned long *)0xe000e100)
 #define NVIC_EN1_REG         (*(volatile unsigned long *)0xe000e104)
 #define NVIC_EN2_REG         (*(volatile unsigned long *)0xe000e108)
