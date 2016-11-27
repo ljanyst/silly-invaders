@@ -61,7 +61,9 @@ TM4C_sys_start:
   ldr   r0, =IO_sys_current   // pointer to IO_sys_current to r0
   ldr   r1, [r0]              // pointer to the first TCB to r1
   ldr   sp, [r1]              // get the stack pointer
-  add   sp, sp, #56           // discard the initial registers
+  add   sp, sp, #32           // discard the initial registers
+  pop   {r0}                  // pass the thread func parameter
+  add   sp, sp, #20           // discard the initial registers
   pop   {lr}                  // start location
   add   sp, sp, #4            // discard psr
   cpsie i                     // enable interrupts

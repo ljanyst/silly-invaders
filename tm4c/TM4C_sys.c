@@ -72,10 +72,11 @@ void IO_sys_start(uint32_t time_slice)
 //------------------------------------------------------------------------------
 // Initialize the stack
 //------------------------------------------------------------------------------
-void IO_sys_stack_init(IO_sys_thread *thread, void (*func)())
+void IO_sys_stack_init(IO_sys_thread *thread, void (*func)(void *), void *arg)
 {
   thread->stack[IO_SYS_STACK_SIZE-1] = 0x01000000;      // PSR with thumb bit
   thread->stack[IO_SYS_STACK_SIZE-2] = (uint32_t)func;  // link register
+  thread->stack[IO_SYS_STACK_SIZE-8] = (uint32_t)arg;   // r0 - the argument
   thread->stack_ptr = &thread->stack[IO_SYS_STACK_SIZE-16]; // top of the stack
 }
 
