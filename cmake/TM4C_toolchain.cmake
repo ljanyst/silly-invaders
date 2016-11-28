@@ -17,7 +17,7 @@
 include(CMakeForceCompiler)
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_VERSION 1)
-set(TM4C_FLAGS "-mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp")
+set(TM4C_FLAGS "-mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard")
 set(TM4C_FLAGS "${TM4C_FLAGS} -O0 -ffunction-sections -fdata-sections ")
 set(TM4C_FLAGS "${TM4C_FLAGS} -Wall -pedantic")
 set(CMAKE_C_FLAGS "${TM4C_FLAGS} -std=c11" CACHE STRING "" FORCE)
