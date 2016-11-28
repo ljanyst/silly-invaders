@@ -41,12 +41,16 @@ void IO_wait_for_interrupt();
 //------------------------------------------------------------------------------
 #define IO_SYS_STACK_SIZE 250
 
+// Flag indicating that the stack contains the FPU state
+#define IO_SYS_FPU_STATE 0x00000001
+
 struct IO_sys_thread {
   uint32_t *stack_ptr;
-  struct IO_sys_thread *next;
+  uint32_t  flags;
   uint32_t  stack[IO_SYS_STACK_SIZE] __attribute__((aligned(8)));
-  uint8_t   priority;
   void (*func)();
+  struct IO_sys_thread *next;
+  uint8_t   priority;
 };
 
 typedef struct IO_sys_thread IO_sys_thread;
