@@ -17,6 +17,10 @@
 // along with silly-invaders.  If not, see <http://www.gnu.org/licenses/>.
 //------------------------------------------------------------------------------
 
+#define OFF_STACK_PTR 0
+#define OFF_FLAGS     4
+#define FLAG_FPU      0x01
+
   .thumb
   .syntax unified
 
@@ -38,13 +42,34 @@ systick_handler:
   push  {r4-r11}              // push r4-11
   ldr   r0, =IO_sys_current   // pointer to IO_sys_current to r1
   ldr   r1, [r0]              // r1 = OS_current
-  str   sp, [r1]              // store the stack pointer at *OS_current
+
+  ubfx  r2, lr, #4, #1        // extract the fourth bit from the lr register
+  cbnz  r2, .Lsave_stack      // no FPU context to save
+  vstmdb sp!, {s16-s31}       // push FPU registers, this triggers pushing of
+                              // s0-s15
+  ldr   r2, [r1, #OFF_FLAGS]  // load the flags
+  orr   r2, r2, #FLAG_FPU     // set the FPU context flag
+  str   r2, [r1, #OFF_FLAGS]  // store the flags
+
+.Lsave_stack:
+  str   sp, [r1, #OFF_STACK_PTR] // store the stack pointer at *OS_current
+
   push  {r0, lr}              // calling c code, so store r0 and the link
                               // register
   bl    IO_sys_schedule       // call the scheduler
   pop   {r0, lr}              // restore r0 and lr
+
   ldr   r1, [r0]              // load the new TCB pointer to r1
-  ldr   sp, [r1]              // get the stack pointer of the new threadk
+  ldr   sp, [r1, #OFF_STACK_PTR] // get the stack pointer of the new thread
+
+  orr   lr, lr, #0x10         // clear the floating point flag in EXC_RETURN
+  ldr   r2, [r1, #OFF_FLAGS]  // load the flags
+  tst   r2, #0x01             // see if we have the FPU context
+  beq   .Lrestore_regs        // no FPU context
+  vldmia sp!, {s16-s31}       // pop the FPU registers
+  bic   lr, lr, #0x10         // set the floating point flag in EXC_RETURN
+
+.Lrestore_regs:
   pop   {r4-r11}              // restore regs r4-11
   cpsie i                     // enable interrupts
   bx    lr                    // exit the interrupt, restore r0-r3, r12, lr, pc,
