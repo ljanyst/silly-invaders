@@ -23,11 +23,11 @@
 //------------------------------------------------------------------------------
 // Threads
 //------------------------------------------------------------------------------
-void thread0() { while(1); }
-void thread1() { while(1); }
-void thread2() { while(1); }
-void thread3() { while(1); }
-void thread4() { while(1); }
+void thread0() { for(int i = 0; i < 1*8000000; ++i); }
+void thread1() { for(int i = 0; i < 2*8000000; ++i); }
+void thread2() { for(int i = 0; i < 3*8000000; ++i); }
+void thread3() { for(int i = 0; i < 4*8000000; ++i); }
+void thread4() { for(int i = 0; i < 5*8000000; ++i); }
 IO_sys_thread tcb[5];
 
 //------------------------------------------------------------------------------
