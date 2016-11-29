@@ -52,3 +52,10 @@ void IO_sys_schedule();
 //! @param arg    the argument to the thread functinon
 //------------------------------------------------------------------------------
 void IO_sys_stack_init(IO_sys_thread *thread, void (*func)(void *), void *arg);
+
+//------------------------------------------------------------------------------
+//! Timer tick to be called every milisecond
+//!
+//! @param time current time
+//------------------------------------------------------------------------------
+void IO_sys_timer_tick(uint64_t time);
