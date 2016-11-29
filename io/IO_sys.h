@@ -50,6 +50,7 @@ struct IO_sys_thread {
   uint32_t  stack[IO_SYS_STACK_SIZE] __attribute__((aligned(8)));
   void (*func)();
   struct IO_sys_thread *next;
+  uint32_t  sleep;
   uint8_t   priority;
 };
 
@@ -75,3 +76,10 @@ void IO_sys_run(uint32_t time_slice);
 //! Yield the CPU
 //------------------------------------------------------------------------------
 void IO_sys_yield();
+
+//------------------------------------------------------------------------------
+//! Sleep
+//!
+//! @param time number of miliseconds to sleep for
+//------------------------------------------------------------------------------
+void IO_sys_sleep(uint32_t time);

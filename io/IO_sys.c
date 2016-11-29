@@ -86,10 +86,8 @@ static void thread_wrapper(void *arg)
     for(cur = threads; cur->next != tcb; cur = cur->next);
     cur->next = cur->next->next;
   }
-  else {
+  else
     threads = 0;
-    IO_sys_current = 0;
-  }
   IO_sys_yield();
   IO_enable_interrupts();
 }
@@ -111,6 +109,7 @@ void IO_sys_thread_add(IO_sys_thread *thread, void (*func)(), uint8_t priority)
   IO_disable_interrupts();
   thread->priority = priority;
   thread->func     = func;
+  thread->sleep    = 0;
   if(threads == 0) {
     threads = thread;
     thread->next = thread;
@@ -144,8 +143,61 @@ void IO_sys_run(uint32_t time_slice)
 //------------------------------------------------------------------------------
 void IO_sys_schedule()
 {
-  if(!IO_sys_current)
+  if(!threads) {
     IO_sys_current = &iddle_thread;
-  else
-    IO_sys_current = IO_sys_current->next;
+    return;
+  }
+
+  IO_sys_thread *stop = IO_sys_current->next;
+
+  if(IO_sys_current == &iddle_thread)
+    stop = threads;
+
+  IO_sys_thread *cur  = stop;
+  IO_sys_thread *sel  = 0;
+  int            prio = 266;
+
+  do {
+    if(!cur->sleep && cur->priority < prio) {
+      sel = cur;
+      prio = sel->priority;
+    }
+    cur = cur->next;
+  }
+  while(cur != stop);
+
+  if(!sel)
+    sel = &iddle_thread;
+
+  IO_sys_current = sel;
+}
+
+//------------------------------------------------------------------------------
+// Timer tick
+//------------------------------------------------------------------------------
+void IO_sys_timer_tick(uint64_t time)
+{
+  (void)time;
+  IO_disable_interrupts();
+  if(!threads) {
+    IO_enable_interrupts();
+    return;
+  }
+  IO_sys_thread *t = threads;
+  do {
+    if(t->sleep)
+      --t->sleep;
+    t = t->next;
+  }
+  while(t != threads);
+  IO_enable_interrupts();
+}
+
+//------------------------------------------------------------------------------
+// Sleep
+//------------------------------------------------------------------------------
+void IO_sys_sleep(uint32_t time)
+{
+  IO_sys_current->sleep = time;
+  IO_sys_yield();
 }
