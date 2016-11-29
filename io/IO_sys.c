@@ -110,6 +110,7 @@ void IO_sys_thread_add(IO_sys_thread *thread, void (*func)(), uint8_t priority)
   thread->priority = priority;
   thread->func     = func;
   thread->sleep    = 0;
+  thread->blocker  = 0;
   if(threads == 0) {
     threads = thread;
     thread->next = thread;
@@ -158,7 +159,7 @@ void IO_sys_schedule()
   int            prio = 266;
 
   do {
-    if(!cur->sleep && cur->priority < prio) {
+    if(!cur->sleep && !cur->blocker && cur->priority < prio) {
       sel = cur;
       prio = sel->priority;
     }
@@ -200,4 +201,44 @@ void IO_sys_sleep(uint32_t time)
 {
   IO_sys_current->sleep = time;
   IO_sys_yield();
+}
+
+//------------------------------------------------------------------------------
+// Initialize the semaphore
+//------------------------------------------------------------------------------
+void IO_sys_semaphore_init(IO_sys_semaphore *sem, int32_t val)
+{
+  if(val < 0)
+    val = 0;
+  *sem = val;
+}
+
+//------------------------------------------------------------------------------
+// Signal
+//------------------------------------------------------------------------------
+void IO_sys_signal(IO_sys_semaphore *sem)
+{
+  IO_disable_interrupts();
+  ++*sem;
+  if(*sem <= 0) {
+    IO_sys_thread *t;
+    for(t = IO_sys_current->next; t->blocker != sem; t = t->next);
+    t->blocker = 0;
+  }
+  IO_enable_interrupts();
+}
+
+//------------------------------------------------------------------------------
+// Wait
+//------------------------------------------------------------------------------
+void IO_sys_wait(IO_sys_semaphore *sem)
+{
+  IO_disable_interrupts();
+  --*sem;
+  if(*sem < 0) {
+    IO_sys_current->blocker = sem;
+    IO_enable_interrupts();
+    IO_sys_yield();
+  }
+  IO_enable_interrupts();
 }

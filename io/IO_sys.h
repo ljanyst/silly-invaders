@@ -37,6 +37,11 @@ void IO_disable_interrupts();
 void IO_wait_for_interrupt();
 
 //------------------------------------------------------------------------------
+//! Semaphore
+//------------------------------------------------------------------------------
+typedef int32_t IO_sys_semaphore;
+
+//------------------------------------------------------------------------------
 //! Thread control block
 //------------------------------------------------------------------------------
 #define IO_SYS_STACK_SIZE 250
@@ -51,6 +56,7 @@ struct IO_sys_thread {
   void (*func)();
   struct IO_sys_thread *next;
   uint32_t  sleep;
+  IO_sys_semaphore *blocker;
   uint8_t   priority;
 };
 
@@ -83,3 +89,25 @@ void IO_sys_yield();
 //! @param time number of miliseconds to sleep for
 //------------------------------------------------------------------------------
 void IO_sys_sleep(uint32_t time);
+
+//------------------------------------------------------------------------------
+//! Initialize the semaphore
+//!
+//! @param sem semaphore
+//! @param val initial value
+//------------------------------------------------------------------------------
+void IO_sys_semaphore_init(IO_sys_semaphore *sem, int32_t val);
+
+//------------------------------------------------------------------------------
+//! Signal
+//!
+//! @param sem semaphore
+//------------------------------------------------------------------------------
+void IO_sys_signal(IO_sys_semaphore *sem);
+
+//------------------------------------------------------------------------------
+//! Wait
+//!
+//! @param sem semaphore
+//------------------------------------------------------------------------------
+void IO_sys_wait(IO_sys_semaphore *sem);
