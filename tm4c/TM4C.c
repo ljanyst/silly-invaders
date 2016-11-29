@@ -121,6 +121,7 @@ static uint64_t time = 0;
 static void tick_event(IO_io *io, uint16_t event)
 {
   ++time;
+  IO_sys_timer_tick(time);
   IO_set(&tick_timer, 1000000); // fire in a milisecond
 }
 
