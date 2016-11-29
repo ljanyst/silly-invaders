@@ -8,12 +8,12 @@ macro(add_test name)
 endmacro()
 
 set(tests startup;uart;uart-async;uart-dma;ssi-dma;gpio;display;timer;input)
-set(tests ${tests};sound;rng;os-basic;os-float)
+set(tests ${tests};sound;rng;os-basic;os-float;os-threads)
 
 add_executable(test-00-startup.axf test-00-startup.c)
 add_raw_binary(test-00-startup.bin test-00-startup.axf)
 
-foreach(i RANGE 1 12)
+foreach(i RANGE 1 13)
   list(GET tests ${i} name)
   if(i LESS 10)
     add_test(test-0${i}-${name})
