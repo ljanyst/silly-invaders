@@ -108,12 +108,12 @@ int main()
   IO_sys_semaphore_init(&s4, 0);
   IO_sys_semaphore_init(&s5, 0);
 
-  IO_sys_thread_add(&tcb[0], writer,   255);
-  IO_sys_thread_add(&tcb[1], changer1, 255);
-  IO_sys_thread_add(&tcb[2], changer2, 255);
-  IO_sys_thread_add(&tcb[3], sync1,    255);
-  IO_sys_thread_add(&tcb[4], sync2,    255);
-  IO_sys_thread_add(&tcb[5], sync3,    255);
+  IO_sys_thread_add(&tcb[0], writer,   1000, 255);
+  IO_sys_thread_add(&tcb[1], changer1,  500, 255);
+  IO_sys_thread_add(&tcb[2], changer2,  500, 255);
+  IO_sys_thread_add(&tcb[3], sync1,     500, 255);
+  IO_sys_thread_add(&tcb[4], sync2,     500, 255);
+  IO_sys_thread_add(&tcb[5], sync3,     500, 255);
 
   IO_sys_run(1000);
 }

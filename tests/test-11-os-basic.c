@@ -37,11 +37,11 @@ int main()
 {
   IO_init(0);
 
-  IO_sys_thread_add(&tcb[0], thread0, 255);
-  IO_sys_thread_add(&tcb[1], thread1, 255);
-  IO_sys_thread_add(&tcb[2], thread2, 255);
-  IO_sys_thread_add(&tcb[3], thread3, 255);
-  IO_sys_thread_add(&tcb[4], thread4, 255);
+  IO_sys_thread_add(&tcb[0], thread0, 500, 255);
+  IO_sys_thread_add(&tcb[1], thread1, 500, 255);
+  IO_sys_thread_add(&tcb[2], thread2, 500, 255);
+  IO_sys_thread_add(&tcb[3], thread3, 500, 255);
+  IO_sys_thread_add(&tcb[4], thread4, 500, 255);
 
   IO_sys_run(1000);
 }
