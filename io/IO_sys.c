@@ -85,6 +85,7 @@ static void thread_wrapper(void *arg)
     IO_sys_thread *cur;
     for(cur = threads; cur->next != tcb; cur = cur->next);
     cur->next = cur->next->next;
+    threads = cur;
   }
   else
     threads = 0;
