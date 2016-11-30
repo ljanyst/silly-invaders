@@ -22,6 +22,7 @@
 #include "IO_sys_low.h"
 #include "IO_utils.h"
 #include "IO_error.h"
+#include "IO_malloc.h"
 
 //------------------------------------------------------------------------------
 // Enable interrupts
@@ -56,8 +57,8 @@ WEAK_ALIAS(__IO_sys_start, IO_sys_start);
 //------------------------------------------------------------------------------
 // Initialize the stack
 //------------------------------------------------------------------------------
-void __IO_sys_stack_init(IO_sys_thread *thread, void (*func)(void *),
-  void *arg) {}
+void __IO_sys_stack_init(IO_sys_thread *thread, void (*func)(void *), void *arg,
+  void *stack, uint32_t stack_size) {}
 WEAK_ALIAS(__IO_sys_stack_init, IO_sys_stack_init);
 
 //------------------------------------------------------------------------------
@@ -105,13 +106,24 @@ static void iddle_thread_func(void *arg)
 //------------------------------------------------------------------------------
 // Register a thread
 //------------------------------------------------------------------------------
-void IO_sys_thread_add(IO_sys_thread *thread, void (*func)(), uint8_t priority)
+int32_t IO_sys_thread_add(IO_sys_thread *thread, void (*func)(),
+  uint32_t stack_size, uint8_t priority)
 {
+  if(stack_size < 500)
+    return -IO_EINVAL;
+
   IO_disable_interrupts();
   thread->priority = priority;
   thread->func     = func;
   thread->sleep    = 0;
   thread->blocker  = 0;
+
+  void *stack = IO_malloc(stack_size);
+  if(stack == 0) {
+    IO_enable_interrupts();
+    return -IO_ENOMEM;
+  }
+
   if(threads == 0) {
     threads = thread;
     thread->next = thread;
@@ -124,20 +136,29 @@ void IO_sys_thread_add(IO_sys_thread *thread, void (*func)(), uint8_t priority)
     last->next = threads;
   }
 
-  IO_sys_stack_init(thread, thread_wrapper, thread);
+  IO_sys_stack_init(thread, thread_wrapper, thread, stack, stack_size);
   IO_enable_interrupts();
+  return 0;
 }
 
 //------------------------------------------------------------------------------
 // Run the operating system
 //------------------------------------------------------------------------------
-void IO_sys_run(uint32_t time_slice)
+int32_t IO_sys_run(uint32_t time_slice)
 {
   IO_disable_interrupts();
-  IO_sys_stack_init(&iddle_thread, iddle_thread_func, 0);
+
+  void *stack = IO_malloc(500);
+  if(!stack) {
+    IO_enable_interrupts();
+    return -IO_ENOMEM;
+  }
+  IO_sys_stack_init(&iddle_thread, iddle_thread_func, 0, stack, 500);
   iddle_thread.next = &iddle_thread;
+
   IO_sys_current = threads;
   IO_sys_start(time_slice);
+  return 0;
 }
 
 //------------------------------------------------------------------------------

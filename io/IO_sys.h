@@ -44,20 +44,14 @@ typedef int32_t IO_sys_semaphore;
 //------------------------------------------------------------------------------
 //! Thread control block
 //------------------------------------------------------------------------------
-#define IO_SYS_STACK_SIZE 250
-
-// Flag indicating that the stack contains the FPU state
-#define IO_SYS_FPU_STATE 0x00000001
-
 struct IO_sys_thread {
-  uint32_t *stack_ptr;
-  uint32_t  flags;
-  uint32_t  stack[IO_SYS_STACK_SIZE] __attribute__((aligned(8)));
+  uint32_t             *stack_ptr;
+  uint32_t              flags;
   void (*func)();
   struct IO_sys_thread *next;
-  uint32_t  sleep;
-  IO_sys_semaphore *blocker;
-  uint8_t   priority;
+  uint32_t              sleep;
+  IO_sys_semaphore     *blocker;
+  uint8_t               priority;
 };
 
 typedef struct IO_sys_thread IO_sys_thread;
@@ -65,18 +59,20 @@ typedef struct IO_sys_thread IO_sys_thread;
 //------------------------------------------------------------------------------
 //! Register a thread
 //!
-//! @param thread   thread control block
-//! @param func     thread function
-//! @param priority thread priority
+//! @param thread     thread control block
+//! @param func       thread function
+//! @param stack_size size of the stack
+//! @param priority   thread priority
 //------------------------------------------------------------------------------
-void IO_sys_thread_add(IO_sys_thread *thread, void (*func)(), uint8_t priority);
+int32_t IO_sys_thread_add(IO_sys_thread *thread, void (*func)(),
+  uint32_t stack_size, uint8_t priority);
 
 //------------------------------------------------------------------------------
 //! Run the operating system
 //!
 //! @param time_slice timeslice in microseconds
 //------------------------------------------------------------------------------
-void IO_sys_run(uint32_t time_slice);
+int32_t IO_sys_run(uint32_t time_slice);
 
 //------------------------------------------------------------------------------
 //! Yield the CPU

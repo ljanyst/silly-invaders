@@ -23,6 +23,7 @@
 #error "This is a low-level header for driver implementation purposes only"
 #endif
 
+#include "IO_sys.h"
 #include <stdint.h>
 
 //------------------------------------------------------------------------------
@@ -47,11 +48,14 @@ void IO_sys_schedule();
 //------------------------------------------------------------------------------
 //! Initialize the stack
 //!
-//! @param thread the thread control block
-//! @param func   the thread function
-//! @param arg    the argument to the thread functinon
+//! @param thread     the thread control block
+//! @param func       the thread function
+//! @param arg        the argument to the thread functinon
+//! @param stack      the stack
+//! @param stack_size size of the stack
 //------------------------------------------------------------------------------
-void IO_sys_stack_init(IO_sys_thread *thread, void (*func)(void *), void *arg);
+void IO_sys_stack_init(IO_sys_thread *thread, void (*func)(void *), void *arg,
+  void *stack, uint32_t stack_size);
 
 //------------------------------------------------------------------------------
 //! Timer tick to be called every milisecond
