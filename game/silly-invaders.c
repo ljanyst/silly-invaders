@@ -21,14 +21,13 @@
 #include "SI.h"
 #include "SI_hardware.h"
 #include "SI_sound.h"
-#include "io/IO_sys.h"
+#include <io/IO_sys.h>
 
 #include <string.h>
 
 //------------------------------------------------------------------------------
 // Scenes
 //------------------------------------------------------------------------------
-
 uint8_t current_scene = SI_SCENE_INTRO;
 
 struct {
@@ -41,8 +40,22 @@ struct {
 //------------------------------------------------------------------------------
 void set_active_scene(uint8_t scene)
 {
+  IO_disable_interrupts();
   scenes[scene].cons(&scenes[scene].scene);
+  IO_enable_interrupts();
   current_scene = scene;
+}
+
+//------------------------------------------------------------------------------
+// Game thread
+//------------------------------------------------------------------------------
+IO_sys_thread game_thread;
+void game_thread_func()
+{
+  while(1) {
+    SI_scene_render(&scenes[current_scene].scene, &display);
+    IO_sys_sleep(1000/scenes[current_scene].scene.fps);
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -61,8 +74,6 @@ int main()
   scenes[SI_SCENE_SCORE].cons = score_scene_setup;
   set_active_scene(SI_SCENE_INTRO);
 
-  while(1) {
-    SI_scene_render(&scenes[current_scene].scene, &display, &scene_timer);
-    IO_wait_for_interrupt();
-  }
+  IO_sys_thread_add(&game_thread, game_thread_func, 2000, 255);
+  IO_sys_run(1000);
 }

@@ -378,7 +378,6 @@ void game_scene_setup(SI_scene *scene)
   scene->pre_render = game_scene_pre_render;
   scene->collision  = game_scene_collision;
   scene->fps   = 25;
-  scene->flags = SI_SCENE_RENDER;
   button_value = 0;
 
   IO_set(&led, 1);

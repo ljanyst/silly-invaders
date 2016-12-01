@@ -82,12 +82,10 @@ void button_event(IO_io *io, uint16_t event)
 //------------------------------------------------------------------------------
 void SI_hardware_init()
 {
-  IO_init(4096);
+  IO_init(0);
 
   IO_display_init(&display, 0);
   IO_display_get_attrs(&display, &display_attrs);
-
-  IO_timer_init(&scene_timer, 0);
 
   IO_timer_init(&slider_timer, 1);
   IO_slider_init(&slider, 0, IO_ASYNC);

@@ -60,28 +60,13 @@ void SI_object_text_cons(SI_object_text *obj, const IO_font *font,
   obj->obj.draw = SI_object_text_draw;
 }
 
-
-//------------------------------------------------------------------------------
-// This should be a map from a timer to a scene, but we're lazy
-//------------------------------------------------------------------------------
-static SI_scene *current_scene;
-
-//------------------------------------------------------------------------------
-// Scene timer event
-//------------------------------------------------------------------------------
-void scene_timer_event(IO_io *io, uint16_t event)
-{
-  current_scene->flags = SI_SCENE_RENDER;
-}
-
 //------------------------------------------------------------------------------
 // Rendere scene on the display
 //------------------------------------------------------------------------------
-void SI_scene_render(SI_scene *scene, IO_io *display, IO_io *timer)
+void SI_scene_render(SI_scene *scene, IO_io *display)
 {
-  if(!scene || !display || !timer || scene->flags == SI_SCENE_IGNORE)
+  if(!scene || !display)
     return;
-  current_scene = scene;
 
   if(scene->pre_render)
     scene->pre_render(scene);
@@ -117,8 +102,4 @@ void SI_scene_render(SI_scene *scene, IO_io *display, IO_io *timer)
       }
     }
   }
-
-  scene->flags = SI_SCENE_IGNORE;
-  timer->event = scene_timer_event;
-  IO_set(timer, 1000000000/scene->fps);
 }

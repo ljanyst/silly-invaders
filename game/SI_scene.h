@@ -70,12 +70,6 @@ void SI_object_text_cons(SI_object_text *obj, const IO_font *font,
   const char *text);
 
 //------------------------------------------------------------------------------
-// Scene flags
-//------------------------------------------------------------------------------
-#define SI_SCENE_IGNORE 0
-#define SI_SCENE_RENDER 1
-
-//------------------------------------------------------------------------------
 //! Scene descriptor
 //------------------------------------------------------------------------------
 struct SI_scene {
@@ -85,7 +79,6 @@ struct SI_scene {
   void      (*collision)(SI_object *obj1, SI_object *obj2);  //!< collision callback
   uint8_t     fps;                                           //!< frames per second
   uint8_t     num_objects;                                   //!< number of objects
-  uint8_t     flags;                                         //!< flags
 };
 
 typedef struct SI_scene SI_scene;
@@ -93,4 +86,4 @@ typedef struct SI_scene SI_scene;
 //------------------------------------------------------------------------------
 //! Rendere scene on the display
 //------------------------------------------------------------------------------
-void SI_scene_render(SI_scene *scene, IO_io *display, IO_io *timer);
+void SI_scene_render(SI_scene *scene, IO_io *display);

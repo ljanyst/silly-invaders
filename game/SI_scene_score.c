@@ -105,5 +105,4 @@ void score_scene_setup(SI_scene *scene)
   secs = 3;
   scene->pre_render = score_scene_pre_render;
   scene->fps   = 1;
-  scene->flags = SI_SCENE_RENDER;
 }

@@ -82,5 +82,4 @@ void level_scene_setup(SI_scene *scene)
   secs = 1;
   scene->pre_render = level_scene_pre_render;
   scene->fps   = 1;
-  scene->flags = SI_SCENE_RENDER;
 }

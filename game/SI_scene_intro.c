@@ -129,5 +129,4 @@ void intro_scene_setup(SI_scene *scene)
 
   scene->pre_render = intro_scene_pre_render;
   scene->fps   = 2;
-  scene->flags = SI_SCENE_RENDER;
 }
