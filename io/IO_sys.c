@@ -242,9 +242,9 @@ void IO_sys_signal(IO_sys_semaphore *sem)
 {
   IO_disable_interrupts();
   ++*sem;
-  if(*sem <= 0) {
+  if(*sem <= 0 && threads) {
     IO_sys_thread *t;
-    for(t = IO_sys_current->next; t->blocker != sem; t = t->next);
+    for(t = threads; t->blocker != sem; t = t->next);
     t->blocker = 0;
   }
   IO_enable_interrupts();
