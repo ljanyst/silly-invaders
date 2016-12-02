@@ -27,7 +27,8 @@
 IO_io display;
 IO_io button[2];
 IO_io sound;
-IO_io timer;
+IO_sound_player player;
+IO_sys_semaphore tune_sem;
 uint64_t val = 0;
 uint8_t stat[2] = {0, 0};
 
@@ -82,8 +83,29 @@ void button_event(IO_io *io, uint16_t event)
       stat[1] = 0;
   }
   val %= 4;
-  IO_sound_play(&sound, &timer, tunes[val], 0);
-  show();
+  IO_sys_signal(&tune_sem);
+}
+
+//------------------------------------------------------------------------------
+// Player thread
+//------------------------------------------------------------------------------
+IO_sys_thread player_thread;
+void player_thread_func()
+{
+  IO_sound_player_run(&player);
+}
+
+//------------------------------------------------------------------------------
+// Control thread
+//------------------------------------------------------------------------------
+IO_sys_thread control_thread;
+void control_thread_func()
+{
+  while(1) {
+    IO_sys_wait(&tune_sem);
+    show();
+    IO_sound_play(&player, tunes[val], 0);
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -91,10 +113,11 @@ void button_event(IO_io *io, uint16_t event)
 //------------------------------------------------------------------------------
 int main()
 {
-  IO_init(4096);
+  IO_init(0);
   IO_display_init(&display, 0);
   IO_sound_init(&sound, 0);
-  IO_timer_init(&timer, 0);
+  IO_sound_player_init(&player, &sound);
+  IO_sys_semaphore_init(&tune_sem, 0);
 
   IO_button_init(&button[0], 0, IO_ASYNC);
   IO_button_init(&button[1], 1, IO_ASYNC);
@@ -111,8 +134,9 @@ int main()
   tunes[1] = IO_sound_decode_RTTTL(pink_panther);
   tunes[2] = IO_sound_decode_RTTTL(indiana);
   tunes[3] = IO_sound_decode_RTTTL(adams);
-  IO_sound_play(&sound, &timer, tunes[0], 0);
+  IO_sound_play(&player, tunes[0], 0);
 
-  while(1)
-    IO_wait_for_interrupt();
+  IO_sys_thread_add(&player_thread,  player_thread_func,  1000, 255);
+  IO_sys_thread_add(&control_thread, control_thread_func, 2000, 255);
+  IO_sys_run(1000);
 }
