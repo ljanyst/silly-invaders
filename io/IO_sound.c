@@ -21,6 +21,7 @@
 #include "IO_sound.h"
 #include "IO_error.h"
 #include "IO_utils.h"
+#include "IO_sys.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -46,82 +47,68 @@ int32_t __IO_sound_count_low()
 WEAK_ALIAS(__IO_sound_count_low, IO_sound_count_low);
 
 //------------------------------------------------------------------------------
-// Helper structs
+// Run the player
 //------------------------------------------------------------------------------
-struct snd_player {
-  IO_io    *sound_dev;
-  IO_io    *timer_dev;
-  IO_tune  *tune;
-  uint16_t  note;
-  uint16_t  note_abs;
-};
-typedef struct snd_player snd_player;
-
-static snd_player *snd_players = 0;
-static uint8_t snd_num_players = 0;
-
-static snd_player *get_player_by_timer(IO_io *timer)
+void IO_sound_player_run(IO_sound_player *player)
 {
-  for(int i = 0; i < snd_num_players; ++i)
-    if(snd_players[i].timer_dev == timer)
-      return &snd_players[i];
-  return 0;
+  if(!player || !(player->flags & IO_SOUND_PLAYER_INITIALIZED) ||
+    (player->flags & IO_SOUND_PLAYER_RUNNING))
+    return;
+
+  player->flags |= IO_SOUND_PLAYER_RUNNING;
+
+  while(1) {
+    IO_sys_wait(&player->sem);
+    while(1) {
+      IO_sys_wait(&player->mutex);
+      IO_tune *t = player->tune;
+      if(t->note[player->note].duration == 0) {
+        IO_set(player->sound_dev, 0);
+        player->tune = 0;
+        IO_sys_signal(&player->mutex);
+        if(player->sound_dev->event)
+          player->sound_dev->event(player->sound_dev, IO_EVENT_DONE);
+        break;
+      }
+
+      uint64_t duration  = t->note[player->note].duration;
+      uint16_t frequency = t->note[player->note].frequency;
+      ++player->note;
+      ++player->note_abs;
+      if(player->note == 32) {
+        player->note = 0;
+        player->tune = player->tune->next;
+      }
+      IO_sys_signal(&player->mutex);
+      IO_set(player->sound_dev, frequency);
+      IO_sys_sleep(duration);
+    }
+  }
 }
 
 //------------------------------------------------------------------------------
-// Timer event
+// Initialize a sound player
 //------------------------------------------------------------------------------
-static void snd_player_event(IO_io *io, uint16_t event)
+int32_t IO_sound_player_init(IO_sound_player *player, IO_io *io)
 {
-  snd_player *player = get_player_by_timer(io);
-  if(!player)
-    return;
+  if(io->type != IO_SOUND)
+    return -IO_EINVAL;
 
-  IO_tune *t = player->tune;
-  if(!t || t->note[player->note].duration == 0) {
-    IO_set(player->sound_dev, 0);
-    if(player->sound_dev->event)
-      player->sound_dev->event(player->sound_dev, IO_EVENT_DONE);
-    return;
-  }
-
-  uint64_t duration  = t->note[player->note].duration;
-  uint16_t frequency = t->note[player->note].frequency;
-  duration *= 1000000;
-  ++player->note;
-  ++player->note_abs;
-  if(player->note == 32) {
-    player->note = 0;
-    player->tune = player->tune->next;
-  }
-
-  IO_set(player->sound_dev, frequency);
-  IO_set(player->timer_dev, duration);
+  IO_sys_semaphore_init(&player->sem, 0);
+  IO_sys_semaphore_init(&player->mutex, 1);
+  player->sound_dev = io;
+  player->tune      = 0;
+  player->flags |= IO_SOUND_PLAYER_INITIALIZED;
+  return 0;
 }
 
 //------------------------------------------------------------------------------
 // Play a tune
 //------------------------------------------------------------------------------
-int32_t IO_sound_play(IO_io *io, IO_io *timer, IO_tune *tune, uint16_t start)
+int32_t IO_sound_play(IO_sound_player *player, IO_tune *tune, uint16_t start)
 {
-  if(io->type != IO_SOUND || timer->type != IO_TIMER || !tune ||
-     tune->note[0].duration == 0)
+  if(!player || !tune || tune->note[0].duration == 0)
     return -IO_EINVAL;
-
-  //----------------------------------------------------------------------------
-  // Check the number of available devices and create a player for each
-  //----------------------------------------------------------------------------
-  if(!snd_players) {
-    int32_t count = IO_sound_count_low();
-    if(count < 0)
-      return count;
-    if(count == 0)
-      return -IO_ENOSYS;
-    snd_num_players = count;
-    snd_players = IO_malloc(sizeof(snd_player)*count);
-    if(!snd_players)
-      return -IO_ENOMEM;
-  }
 
   //----------------------------------------------------------------------------
   // Find the first segment in the tune
@@ -135,27 +122,30 @@ int32_t IO_sound_play(IO_io *io, IO_io *timer, IO_tune *tune, uint16_t start)
   //----------------------------------------------------------------------------
   // Start the playback
   //----------------------------------------------------------------------------
-  snd_players[io->channel].sound_dev  = io;
-  snd_players[io->channel].timer_dev  = timer;
-  snd_players[io->channel].tune       = current;
-  snd_players[io->channel].note       = start % 32;
-  snd_players[io->channel].note_abs   = start;
-  timer->event = snd_player_event;
-
-  return IO_set(timer, 100); // start the playback in 100ns
+  IO_sys_wait(&player->mutex);
+  int sig = player->tune ? 0 : 1;
+  player->tune       = current;
+  player->note       = start % 32;
+  player->note_abs   = start;
+  if(sig)
+    IO_sys_signal(&player->sem);
+  IO_sys_signal(&player->mutex);
+  return 0;
 }
 
 //------------------------------------------------------------------------------
 // Stop current tune
 //------------------------------------------------------------------------------
-int32_t IO_sound_stop(IO_io *io)
+int32_t IO_sound_stop(IO_sound_player *player)
 {
-  if(io->type != IO_SOUND)
+  if(!player)
     return -IO_EINVAL;
 
-  // disable the timer
-  IO_set(snd_players[io->channel].timer_dev, 0);
-  return snd_players[io->channel].note_abs;
+  IO_sys_wait(&player->mutex);
+  player->tune = 0;
+  int32_t note = player->note_abs;
+  IO_sys_signal(&player->mutex);
+  return note;
 }
 
 //------------------------------------------------------------------------------

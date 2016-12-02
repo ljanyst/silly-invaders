@@ -20,6 +20,7 @@
 #pragma once
 
 #include "IO.h"
+#include "IO_sys.h"
 
 //------------------------------------------------------------------------------
 //! Initialize a sound device
@@ -47,21 +48,52 @@ struct IO_tune {
 typedef struct IO_tune IO_tune;
 
 //------------------------------------------------------------------------------
+// A sound player
+//------------------------------------------------------------------------------
+#define IO_SOUND_PLAYER_INITIALIZED 0x01
+#define IO_SOUND_PLAYER_RUNNING     0x02
+
+struct IO_sound_player {
+  IO_io    *sound_dev;
+  IO_sys_semaphore sem;
+  IO_sys_semaphore mutex;
+  uint32_t  flags;
+  IO_tune  *tune;
+  uint16_t  note;
+  uint16_t  note_abs;
+};
+typedef struct IO_sound_player IO_sound_player;
+
+//------------------------------------------------------------------------------
+//! Initialize a sound player
+//!
+//! @param player player to be initializer
+//! @param io     sound device
+//------------------------------------------------------------------------------
+int32_t IO_sound_player_init(IO_sound_player *player, IO_io *io);
+
+//------------------------------------------------------------------------------
+//! Run the player
+//!
+//! @param player player to run
+//------------------------------------------------------------------------------
+void IO_sound_player_run(IO_sound_player *player);
+
+//------------------------------------------------------------------------------
 //! Play a tune
 //!
-//! @param io    IO device to play on
-//! @param timer timer to use
-//! @param tune  tune to play
-//! @param start starting note
+//! @param player player to play on
+//! @param tune   tune to play
+//! @param start  starting note
 //------------------------------------------------------------------------------
-int32_t IO_sound_play(IO_io *io, IO_io *timer, IO_tune *tune, uint16_t start);
+int32_t IO_sound_play(IO_sound_player *player,  IO_tune *tune, uint16_t start);
 
 //------------------------------------------------------------------------------
 //! Stop current tune
 //!
 //! @return -errno on error, position in the tune on success
 //------------------------------------------------------------------------------
-int32_t IO_sound_stop(IO_io *io);
+int32_t IO_sound_stop(IO_sound_player *player);
 
 //------------------------------------------------------------------------------
 //! Decode an RTTTL tune
