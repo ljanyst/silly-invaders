@@ -29,6 +29,7 @@
 
 #include "TM4C.h"
 #include "TM4C_gpio.h"
+#include "TM4C_timer.h"
 
 #include <drivers/pcd8544/pcd8544.h>
 
@@ -270,8 +271,8 @@ int32_t IO_sound_init(IO_io *io, uint8_t module)
     return -IO_EINVAL;
 
   IO_dac_init(&snd_dac, 0);
-  IO_timer_init(&snd_timer, 11);
-  TM4C_enable_interrupt(104, 0); // adjust the interrupt priority for timer 11
+  TM4C_timer_init(&snd_timer, 10);
+  TM4C_enable_interrupt(102, 0); // adjust the interrupt priority for timer 10
   snd_timer.event = snd_timer_event;
 
   io->type    = IO_SOUND;
