@@ -33,7 +33,7 @@ IO_io slider;
 IO_io slider_timer;
 IO_io button[2];
 IO_io sound;
-IO_io sound_timer;
+IO_sound_player sound_player;
 IO_io led;
 
 //------------------------------------------------------------------------------
@@ -102,7 +102,7 @@ void SI_hardware_init()
   IO_event_enable(&button[1], IO_EVENT_CHANGE);
 
   IO_sound_init(&sound, 0);
-  IO_timer_init(&sound_timer, 2);
+  IO_sound_player_init(&sound_player, &sound);
 
   IO_led_init(&led, 0);
 }

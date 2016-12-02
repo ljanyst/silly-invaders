@@ -59,6 +59,15 @@ void game_thread_func()
 }
 
 //------------------------------------------------------------------------------
+// Sound player thread
+//------------------------------------------------------------------------------
+IO_sys_thread sound_thread;
+void sound_thread_func()
+{
+  IO_sound_player_run(&sound_player);
+}
+
+//------------------------------------------------------------------------------
 // Start the show
 //------------------------------------------------------------------------------
 int main()
@@ -74,6 +83,7 @@ int main()
   scenes[SI_SCENE_SCORE].cons = score_scene_setup;
   set_active_scene(SI_SCENE_INTRO);
 
-  IO_sys_thread_add(&game_thread, game_thread_func, 2000, 255);
+  IO_sys_thread_add(&game_thread,  game_thread_func,  2000, 255);
+  IO_sys_thread_add(&sound_thread, sound_thread_func, 1000, 255);
   IO_sys_run(1000);
 }

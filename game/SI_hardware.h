@@ -20,13 +20,14 @@
 #pragma once
 
 #include <io/IO_display.h>
+#include <io/IO_sound.h>
 
 //------------------------------------------------------------------------------
 // Devices
 //------------------------------------------------------------------------------
 extern IO_io display;
 extern IO_io sound;
-extern IO_io sound_timer;
+extern IO_sound_player sound_player;
 extern IO_io led;
 
 //------------------------------------------------------------------------------
