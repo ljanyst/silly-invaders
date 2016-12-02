@@ -148,12 +148,12 @@ int32_t IO_sys_run(uint32_t time_slice)
 {
   IO_disable_interrupts();
 
-  void *stack = IO_malloc(500);
+  void *stack = IO_malloc(1000);
   if(!stack) {
     IO_enable_interrupts();
     return -IO_ENOMEM;
   }
-  IO_sys_stack_init(&iddle_thread, iddle_thread_func, 0, stack, 500);
+  IO_sys_stack_init(&iddle_thread, iddle_thread_func, 0, stack, 1000);
   iddle_thread.next = &iddle_thread;
 
   IO_sys_current = threads;
