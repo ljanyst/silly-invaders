@@ -66,7 +66,12 @@ void IO_sys_start(uint32_t time_slice)
   SYSPRI3_REG   |= 0xE0000000;   // priority 7
   STRELOAD_REG   = time_slice-1; // reload value
   STCTRL_REG     = 0x00000007;   // enable, core clock and interrupt arm
-  TM4C_sys_start();              // set up the stack and run the thread
+
+  //----------------------------------------------------------------------------
+  // Yield
+  //----------------------------------------------------------------------------
+  IO_sys_yield();
+  IO_enable_interrupts();
 }
 
 //------------------------------------------------------------------------------
@@ -78,12 +83,15 @@ void IO_sys_stack_init(IO_sys_thread *thread, void (*func)(void *), void *arg,
   uint32_t sp1 = (uint32_t)stack;
   uint32_t sp2 = (uint32_t)stack;
   sp2 += stack_size;
-  sp2 = (sp2 >> 3) << 3;        // the stack base needs to be 8-aligned
-  sp1 = ((sp1 >> 2) << 2) + 4;  // make the end of the stack 4-aligned
-  stack_size = (sp2 - sp1) / 4; // new size in double words
+  sp2 = (sp2 >> 3) << 3;          // the stack base needs to be 8-aligned
+  if(sp1 % 4)
+    sp1 = ((sp1 >> 2) << 2) + 4;  // make the end of the stack 4-aligned
+  stack_size = (sp2 - sp1) / 4;   // new size in double words
+
   uint32_t *sp = (uint32_t *)sp1;
   sp[stack_size-1] = 0x01000000;          // PSR with thumb bit
-  sp[stack_size-2] = (uint32_t)func;      // link register
+  sp[stack_size-2] = (uint32_t)func;      // program counter
+  sp[stack_size-3] = 0xffffffff;          // link register
   sp[stack_size-8] = (uint32_t)arg;       // r0 - the argument
   thread->stack_ptr = &sp[stack_size-16]; // top of the stack
 }

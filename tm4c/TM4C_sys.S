@@ -74,22 +74,3 @@ systick_handler:
   cpsie i                     // enable interrupts
   bx    lr                    // exit the interrupt, restore r0-r3, r12, lr, pc,
                               // psr
-
-//------------------------------------------------------------------------------
-// Start the first thread
-//------------------------------------------------------------------------------
-  .global TM4C_sys_start
-  .type   TM4C_sys_start STT_FUNC
-  .thumb_func
-  .align  2
-TM4C_sys_start:
-  ldr   r0, =IO_sys_current   // pointer to IO_sys_current to r0
-  ldr   r1, [r0]              // pointer to the first TCB to r1
-  ldr   sp, [r1]              // get the stack pointer
-  add   sp, sp, #32           // discard the initial registers
-  pop   {r0}                  // pass the thread func parameter
-  add   sp, sp, #20           // discard the initial registers
-  pop   {lr}                  // start location
-  add   sp, sp, #4            // discard psr
-  cpsie i                     // enable interrupts
-  bx    lr                    // start first thread
