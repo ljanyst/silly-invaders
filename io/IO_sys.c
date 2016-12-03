@@ -156,7 +156,10 @@ int32_t IO_sys_run(uint32_t time_slice)
   IO_sys_stack_init(&iddle_thread, iddle_thread_func, 0, stack, 1000);
   iddle_thread.next = &iddle_thread;
 
-  IO_sys_current = threads;
+  IO_sys_thread dummy;
+  dummy.next = threads;
+  IO_sys_current = &dummy;
+
   IO_sys_start(time_slice);
   return 0;
 }
