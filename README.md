@@ -12,6 +12,7 @@ not to use any external code at all. See the corresponding blog posts:
 4. [Timers and ADC][4]
 5. [DAC, Sound and Nokia Tunes][5]
 5. [Random Number Generator, Rendering Engine and the Game][6]
+6. [Operating System][7]
 
 Click on the image below to see the demo:
 
@@ -23,3 +24,4 @@ Click on the image below to see the demo:
 [4]: http://jany.st/post/2016-04-25-silly-invaders-4.html
 [5]: http://jany.st/post/2016-04-28-silly-invaders-5.html
 [6]: http://jany.st/post/2016-05-08-silly-invaders-6.html
+[7]: http://jany.st/post/2016-12-10-silly-invaders-7.html
